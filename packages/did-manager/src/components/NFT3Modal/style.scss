@@ -1,0 +1,85 @@
+@font-face {
+  font-family: "Inter var";
+  font-weight: 100 900;
+  font-style: normal;
+  font-named-instance: "Regular";
+  src: url(../../assets/Inter-roman.var.woff2) format("woff2")
+}
+.nft3-modal {
+  --text-color: #000;
+  --modal-bg: #fff;
+  --item-bg: rgb(237, 238, 242);
+  --item-boder-color: rgb(206, 208, 217);
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  font-size: 16px;
+  color: var(--text-color);
+  visibility: hidden;
+  transition: all 0.2s ease-in-out;
+
+  * {
+    font-size: 14px;
+    -webkit-tap-highlight-color: transparent;
+    font-family: 'Inter var', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: 'ss01' on, 'ss02' on, 'cv01' on, 'cv03' on;
+  }
+}
+.nft3-modal__dark {
+  --text-color: #fff;
+  --modal-bg: rgb(25, 27, 31);
+  --item-bg: rgb(44, 47, 54);
+  --item-boder-color: rgb(64, 68, 79);
+}
+.nft3-modal__mask {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0);
+  transition: background-color 0.2s ease-in-out;
+}
+.nft3-modal__body {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  background: var(--modal-bg);
+  border-radius: 20px;
+  padding: 16px 25px 25px 25px;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+}
+.nft3-modal__visible {
+  visibility: visible;
+
+  .nft3-modal__mask {
+    background-color: rgba(0, 0, 0, 0.3);
+  }
+  .nft3-modal__body {
+    opacity: 1;
+  }
+}
+.nft3-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 24px;
+}
+.nft3-modal__title {
+  font-weight: 500;
+  font-size: 18px;
+}
+.nft3-modal__close {
+  cursor: pointer;
+  transition: opacity 0.1s linear;
+  &:hover {
+    opacity: 0.6;
+  }
+}

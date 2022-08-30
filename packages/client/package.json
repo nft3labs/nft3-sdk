@@ -1,0 +1,24 @@
+{
+  "name": "@nft3sdk/client",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc -w"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@ethersproject/abstract-signer": "^5.6.2",
+    "@ethersproject/bytes": "^5.6.1",
+    "@ethersproject/hash": "^5.6.1",
+    "@ethersproject/sha2": "^5.6.1",
+    "@ethersproject/signing-key": "^5.6.2",
+    "@ethersproject/strings": "^5.6.1",
+    "@ethersproject/wallet": "^5.6.2",
+    "@types/json-schema": "^7.0.11",
+    "axios": "^0.27.2"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "name": "node-example",
+  "version": "0.1.0",
+  "description": "nft3sdk node.js example",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc -w"
+  },
+  "dependencies": {
+    "@nft3sdk/client": "*"
+  },
+  "license": "MIT"
+}
