@@ -1,15 +1,12 @@
 const gulp = require('gulp')
 const sass = require('gulp-sass')(require('sass'))
 const ts = require('gulp-typescript')
-const rename = require('gulp-rename')
 const del = require('del')
-const path = require('path')
-const tsconfig = require('./tsconfig.json')
 
 const isDev = process.argv[2] === '--dev'
 
 function clean() {
-  return del('./lib/**')
+  return del('./libs/**')
 }
 
 function buildStyle() {
@@ -18,11 +15,11 @@ function buildStyle() {
       base: './src/'
     })
     .pipe(sass())
-    .pipe(gulp.dest('./lib/'))
+    .pipe(gulp.dest('./libs/'))
 }
 
 function copyAssets() {
-  return gulp.src('./src/assets/**/*').pipe(gulp.dest('./lib/assets'))
+  return gulp.src('./src/assets/**/*').pipe(gulp.dest('./libs/assets'))
 }
 
 function buildJs() {
@@ -38,7 +35,7 @@ function buildJs() {
         moduleResolution: 'node'
       })
     )
-    .pipe(gulp.dest('./lib'))
+    .pipe(gulp.dest('./libs'))
 }
 
 if (isDev) {

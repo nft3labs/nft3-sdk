@@ -1,4 +1,4 @@
-import { NFT3Client, NFT3Queryer, NFT3Verifier, } from '@nft3sdk/client'
+import { NFT3Client, NFT3Queryer, NFT3Verifier } from '@nft3sdk/client'
 
 interface INote {
   title: string
@@ -52,7 +52,7 @@ async function setProfile() {
     await client.profile.set({
       name: 'Laozhang',
       avatar: 'ipfs://QmSAnbgZSwuCiFcw1u912UqETfVxnKPqkKH8YGr1mirGSu',
-      bio: 'I\'m Laozhang',
+      bio: "I'm Laozhang",
       location: 'HK',
       gender: '',
       url: '',

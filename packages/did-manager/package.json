@@ -2,7 +2,7 @@
   "name": "@nft3sdk/did-manager",
   "version": "0.1.0",
   "description": "",
-  "main": "lib/index.js",
+  "main": "libs/index.js",
   "scripts": {
     "dev": "gulp --dev",
     "build": "gulp"
