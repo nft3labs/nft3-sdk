@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Button, List, Message } from '@arco-design/web-react'
 import { useNFT3 } from '@nft3sdk/did-manager'
+import { IconPlus, IconClose } from '@arco-design/web-react/icon'
 
 import styles from './style.module.scss'
 import useWallet from '@hooks/useWallet'
@@ -36,7 +37,7 @@ export default function Wallets() {
 
   const added = useMemo(() => {
     const index = accounts.findIndex(
-      item => item.toLowerCase() === account?.toLowerCase() && account
+      item => item.account.toLowerCase() === account?.toLowerCase() && account
     )
     return index > -1
   }, [accounts, account])
@@ -48,8 +49,10 @@ export default function Wallets() {
         dataSource={accounts}
         className={styles.list}
         render={(item, i) => (
-          <List.Item key={i}>
-            <List.Item.Meta title={<div className={styles.type}>{item}</div>} />
+          <List.Item key={i} actions={[<span>{item.network}</span>]}>
+            <List.Item.Meta
+              title={<div className={styles.type}>{item.account}</div>}
+            />
           </List.Item>
         )}
       />
@@ -61,8 +64,10 @@ export default function Wallets() {
             status="danger"
             size="large"
             shape="round"
+            disabled={accounts.length <= 1}
             loading={loading}
             onClick={onRemove}
+            icon={<IconClose />}
           >
             Remove this wallet
           </Button>
@@ -73,6 +78,7 @@ export default function Wallets() {
             shape="round"
             onClick={onAdd}
             loading={loading}
+            icon={<IconPlus />}
           >
             Add this wallet
           </Button>

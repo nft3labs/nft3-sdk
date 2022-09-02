@@ -1,17 +1,24 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useNFT3 } from '@nft3sdk/did-manager'
 
+interface AccountRecord {
+  account: string
+  network: string
+}
+
 export default function useWallet() {
   const { client, identifier } = useNFT3()
-  const [accounts, setAccounts] = useState<string[]>([])
+  const [accounts, setAccounts] = useState<AccountRecord[]>([])
 
   const list = useCallback(async () => {
     if (!identifier) return
     const result = await client.did.accounts()
     const accounts = result.map(item => {
       const arr = item.split(':')
-      if (arr[0] === 'ethereum') return '0x' + arr[1]
-      return item
+      return {
+        network: arr[0],
+        account: arr[1]
+      }
     })
     setAccounts(accounts)
   }, [client.did, identifier])
