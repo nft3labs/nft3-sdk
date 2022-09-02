@@ -57,7 +57,7 @@ export default function Profile() {
 
   useEffect(() => {
     if (didinfo?.addresses?.length) {
-      openseaAssets('0x' + didinfo.addresses[0].split(':')[1])
+      openseaAssets(didinfo.addresses[0].split(':')[1])
     }
   }, [didinfo, openseaAssets])
 

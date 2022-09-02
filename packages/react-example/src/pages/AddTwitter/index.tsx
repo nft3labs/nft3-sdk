@@ -37,7 +37,7 @@ export default function AddTwitter() {
         msghash: info!.msghash
       })
       setInfo(undefined)
-      navigate('/socials')
+      navigate('/home/socials')
       Message.success('Account added')
     } catch (error: any) {
       Message.error(error.message || 'Verify failed')

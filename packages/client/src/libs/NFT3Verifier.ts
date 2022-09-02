@@ -34,14 +34,14 @@ export default class NFT3Verifier {
     const { msghash, signature } = this.client.did.sign(message)
     const text = `NFT3 signed for ${
       this.client.did.identifier
-    }, sig: ${signature.replace(/^0x/, '')}`
+    }, sig: ${signature}`
     const link = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
       text
     )}`
     return {
       link,
       text,
-      msghash: msghash.replace(/^0x/, '')
+      msghash
     }
   }
 
@@ -49,7 +49,7 @@ export default class NFT3Verifier {
     const params = new URLSearchParams()
     params.set('did', this.client.did.identifier)
     params.set('account', account)
-    params.set('msghash', msghash.replace(/^0x/, ''))
+    params.set('msghash', msghash)
     const query = params.toString()
     const url = `/requestVerify/twitter?${query}`
     const { data } = await this.request.get(url)
@@ -68,9 +68,7 @@ export default class NFT3Verifier {
     verifierKey = verifierKey || this.verifierKey
     const message = `NFT3-Verifier:\n${info.did}\n${info.type}\n${info.account}`
     const signHash = id(message)
-    let proof = info.proof
-    if (proof.startsWith('0x') === false) proof = '0x' + proof
-    const publicKey = recoverPublicKey(signHash, proof)
+    const publicKey = recoverPublicKey(signHash, info.proof)
     const result = publicKey === verifierKey
     return result
   }
