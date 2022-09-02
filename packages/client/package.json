@@ -1,11 +1,12 @@
 {
   "name": "@nft3sdk/client",
   "version": "0.1.0",
-  "description": "",
-  "main": "dist/index.js",
+  "description": "NFT3 SDK client",
+  "main": "libs/cjs/index.js",
+  "module": "libs/es/index.js",
   "scripts": {
-    "build": "tsc",
-    "dev": "tsc -w"
+    "dev": "gulp --dev",
+    "build": "gulp"
   },
   "keywords": [],
   "author": "",
@@ -17,8 +18,14 @@
     "@ethersproject/sha2": "^5.6.1",
     "@ethersproject/signing-key": "^5.6.2",
     "@ethersproject/strings": "^5.6.1",
+    "@ethersproject/units": "^5.7.0",
     "@ethersproject/wallet": "^5.6.2",
     "@types/json-schema": "^7.0.11",
     "axios": "^0.27.2"
+  },
+  "devDependencies": {
+    "del": "6.1.1",
+    "gulp": "^4.0.2",
+    "gulp-typescript": "6.0.0-alpha.1"
   }
 }

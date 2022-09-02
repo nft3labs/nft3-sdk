@@ -20,7 +20,7 @@ type NFT3Theme = 'light' | 'dark'
 
 interface NFT3Context {
   account?: string
-  client?: NFT3Client
+  client: NFT3Client
   didname?: string
   ready?: boolean
   needRegister: boolean
@@ -33,6 +33,7 @@ interface NFT3Context {
   checkLogin: () => Promise<string | undefined>
   eagerConnect: () => void
   disconnect: () => void
+  selectWallet: (wallet: WalletType) => void
 }
 
 interface IContexts {
@@ -68,7 +69,7 @@ function useWebNFT3(endpoint: string) {
   }, [identifier])
 
   useEffect(() => {
-    const sessionKey = localStorage.getItem('sessionKey') || undefined
+    const sessionKey = sessionStorage.getItem('sessionKey') || undefined
     if (nft3Wallet?.network === 'Ethereum') {
       const signer = nft3Wallet?.provider?.getSigner()
       client.did.config({
@@ -90,7 +91,6 @@ function useWebNFT3(endpoint: string) {
   const register = useCallback(
     async (identifier: string) => {
       const result = await client.did?.register(identifier)
-      setIdentifier(result.identifier)
       setReady(true)
       return result.identifier
     },
@@ -103,7 +103,7 @@ function useWebNFT3(endpoint: string) {
       const result = await client.did.login()
       setIdentifier(result.identifier)
       if (client.did.signKey) {
-        localStorage.setItem('sessionKey', client.did.signKey)
+        sessionStorage.setItem('sessionKey', client.did.signKey)
       }
       return result.identifier
     } catch (error: any) {
@@ -118,7 +118,7 @@ function useWebNFT3(endpoint: string) {
   // DID logout
   const logout = useCallback(() => {
     setIdentifier(undefined)
-    localStorage.removeItem('sessionKey')
+    sessionStorage.removeItem('sessionKey')
   }, [])
 
   // check did login status
@@ -140,7 +140,7 @@ function useWebNFT3(endpoint: string) {
   }, [checkLogin, account])
 
   // select a wallet
-  const onSelect = async (type: WalletType, silent = false) => {
+  const selectWallet = async (type: WalletType, silent = false) => {
     let wallet: IWallet
     if (type === 'MetaMask') {
       wallet = new EthereumWallet('MetaMask')
@@ -164,7 +164,7 @@ function useWebNFT3(endpoint: string) {
   const eagerConnect = useCallback(async () => {
     const wallet = localStorage.getItem('wallet') as WalletType
     if (wallet === 'Phantom' || wallet === 'MetaMask') {
-      onSelect(wallet, true)
+      selectWallet(wallet, true)
     }
   }, [])
 
@@ -179,7 +179,7 @@ function useWebNFT3(endpoint: string) {
     identifier,
     ready,
     needRegister,
-    onSelect,
+    selectWallet,
     setAccount,
     setSelectVisible,
     setNeedRegister,
@@ -197,6 +197,7 @@ function useWebNFT3(endpoint: string) {
 
 function createNFT3Context() {
   context.value = createContext<NFT3Context>({
+    client: new NFT3Client(''),
     account: undefined,
     didname: undefined,
     theme: 'light',
@@ -207,7 +208,8 @@ function createNFT3Context() {
     logout: () => {},
     checkLogin: () => Promise.resolve(undefined),
     login: () => Promise.resolve(undefined),
-    register: () => Promise.resolve('')
+    register: () => Promise.resolve(''),
+    selectWallet: () => {}
   })
   const Provider = context.value.Provider
 
@@ -228,7 +230,7 @@ function createNFT3Context() {
       ready,
       identifier,
       needRegister,
-      onSelect,
+      selectWallet,
       connect,
       setAccount,
       register,
@@ -261,7 +263,8 @@ function createNFT3Context() {
           checkLogin,
           eagerConnect,
           connect,
-          disconnect
+          disconnect,
+          selectWallet
         }}
       >
         {props.children}
@@ -270,7 +273,7 @@ function createNFT3Context() {
             <WalletSelect
               visible={selectVisible}
               onClose={wallet => {
-                if (wallet) onSelect(wallet)
+                if (wallet) selectWallet(wallet)
                 setSelectVisible(false)
               }}
             />

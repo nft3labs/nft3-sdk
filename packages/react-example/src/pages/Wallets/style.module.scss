@@ -1,0 +1,24 @@
+.wrap {
+  max-width: 800px;
+  margin: auto;
+  padding: 30px 20px;
+}
+.title {
+  font-size: 26px;
+  font-family: 'Space Mono';
+}
+.toolbar,
+.list {
+  margin-top: 30px;
+}
+.bottom {
+  text-align: center;
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+.current {
+  font-family: "Space Mono";
+}

@@ -1,0 +1,25 @@
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+.item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid var(--color-border);
+  background: var(--color-fill-1);
+  border-radius: 8px;
+  padding: 12px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.1s linear;
+
+  &:hover {
+    background: var(--color-fill-2);
+  }
+}
+.icon {
+  width: 30px;
+  height: 30px;
+}

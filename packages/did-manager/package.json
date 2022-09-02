@@ -2,7 +2,8 @@
   "name": "@nft3sdk/did-manager",
   "version": "0.1.0",
   "description": "",
-  "main": "libs/index.js",
+  "main": "libs/cjs/index.js",
+  "module": "libs/es/index.js",
   "scripts": {
     "dev": "gulp --dev",
     "build": "gulp"
@@ -20,7 +21,6 @@
     "eslint": "^8.22.0",
     "eslint-config-react-app": "^7.0.1",
     "gulp": "^4.0.2",
-    "gulp-rename": "^2.0.0",
     "gulp-sass": "^5.1.0",
     "gulp-typescript": "6.0.0-alpha.1",
     "react": "^18.2.0",

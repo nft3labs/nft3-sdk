@@ -9,42 +9,66 @@ function clean() {
   return del('./libs/**')
 }
 
-function buildStyle() {
-  return gulp
-    .src(['./src/**/*.scss'], {
-      base: './src/'
-    })
-    .pipe(sass())
-    .pipe(gulp.dest('./libs/'))
-}
-
-function copyAssets() {
-  return gulp.src('./src/assets/**/*').pipe(gulp.dest('./libs/assets'))
-}
-
-function buildJs() {
-  return gulp
-    .src(['./src/**/*.{ts,tsx}'])
-    .pipe(
-      ts({
-        target: 'esnext',
-        module: 'commonjs',
-        declaration: true,
-        jsx: 'react-jsx',
-        skipLibCheck: true,
-        moduleResolution: 'node'
+function buildStyle(dir) {
+  return () => {
+    return gulp
+      .src(['./src/**/*.scss'], {
+        base: './src/'
       })
-    )
-    .pipe(gulp.dest('./libs'))
+      .pipe(sass())
+      .pipe(gulp.dest(`./libs/${dir}`))
+  }
+}
+
+function copyAssets(dir) {
+  return () => {
+    return gulp
+      .src('./src/assets/**/*')
+      .pipe(gulp.dest(`./libs/${dir}/assets/`))
+  }
+}
+
+function buildJs(dir) {
+  const module = dir === 'cjs' ? 'commonjs' : 'es2020'
+  return () => {
+    return gulp
+      .src(['./src/**/*.{ts,tsx}'])
+      .pipe(
+        ts({
+          target: 'es2020',
+          module,
+          declaration: true,
+          jsx: 'react-jsx',
+          skipLibCheck: true,
+          moduleResolution: 'node'
+        })
+      )
+      .pipe(gulp.dest(`./libs/${dir}`))
+  }
 }
 
 if (isDev) {
   exports.default = function () {
     gulp.watch(
       './src/**/*.{ts,tsx,scss}',
-      gulp.series(buildJs, buildStyle, copyAssets)
+      gulp.series(
+        buildJs('cjs'),
+        buildStyle('cjs'),
+        copyAssets('cjs'),
+        buildJs('es'),
+        buildStyle('es'),
+        copyAssets('es')
+      )
     )
   }
 } else {
-  exports.default = gulp.series(clean, buildJs, buildStyle, copyAssets)
+  exports.default = gulp.series(
+    clean,
+    buildJs('cjs'),
+    buildStyle('cjs'),
+    copyAssets('cjs'),
+    buildJs('es'),
+    buildStyle('es'),
+    copyAssets('es')
+  )
 }

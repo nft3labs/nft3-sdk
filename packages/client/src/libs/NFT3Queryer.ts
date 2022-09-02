@@ -1,12 +1,16 @@
 import axios, { AxiosInstance } from 'axios'
+import { formatUnits } from '@ethersproject/units'
 
 export interface TokenRecord {
   network: string
   symbol: string
   decimals: number
-  balance: string
+  balance: number
+  balanceUSD: number
   owner: string
   contract: string
+  price: number
+  icon: string
 }
 
 export interface TxRecord {
@@ -14,6 +18,7 @@ export interface TxRecord {
   symbol: string
   from: string
   to: string
+  hash: string
   amount: string
   blocknum: number
   timestamp: string
@@ -65,7 +70,6 @@ export interface QueryParams {
 export interface QueryOptions {
   tokens?: QueryParams
   txs?: QueryParams
-  nfts?: QueryParams
   poaps?: QueryParams
 }
 
@@ -74,6 +78,32 @@ export interface QueryResponse {
   txs: TxRecord[]
   nfts: NFTRecord[]
   poaps: POAPRecord[]
+}
+
+export interface OpenseaAssetsOptions {
+  owner: string
+  limit: number
+  cursor?: string
+}
+
+export interface OpenseaAssetsRecord {
+  id: number
+  image_url: string
+  image_preview_url: string
+  permalink: string
+  name: string
+  description: string
+  asset_contract: {
+    contract: string
+    symbol: string
+  }
+  token_id: string
+}
+
+export interface OpenseaAssetsResponse {
+  next: string | null
+  previous: string | null
+  assets: OpenseaAssetsRecord[]
 }
 
 export default class NFT3Queryer {
@@ -93,6 +123,8 @@ export default class NFT3Queryer {
     balance
     owner
     contract
+    price
+    icon
   }`
     return query
   }
@@ -103,6 +135,7 @@ export default class NFT3Queryer {
     symbol
     from
     to
+    hash
     amount
     blocknum
     timestamp
@@ -126,7 +159,7 @@ export default class NFT3Queryer {
   }
 
   private poapsQuery() {
-      const query = `poaps(did: $poapsDid, network: $poapsNetwork, offset: $poapsOffset, limit: $poapsLimit) {
+    const query = `poaps(did: $poapsDid, network: $poapsNetwork, offset: $poapsOffset, limit: $poapsLimit) {
     tokenId
     owner
     network
@@ -195,9 +228,34 @@ export default class NFT3Queryer {
         query,
         variables
       })
+      const tokens = data.data.tokens
+      if (tokens) {
+        for (const token of tokens) {
+          token.balance = Number(formatUnits(token.balance, token.decimals))
+          token.balanceUSD = token.price * token.balance
+        }
+      }
       return data.data
     } catch (error) {
       console.trace(error)
     }
+  }
+
+  /**
+   * list opensea assets, available in browser only
+   * @param options 
+   * @returns 
+   */
+  async openseaAssets(options: OpenseaAssetsOptions) {
+    let limit = options.limit
+    if (limit < 0) limit = 10
+    if (limit > 50) limit = 50
+    const params = new URLSearchParams()
+    params.set('owner', options.owner)
+    params.set('limit', limit.toString())
+    if (options.cursor) params.set('cursor', options.cursor)
+    const url = `https://api.opensea.io/api/v1/assets?${params.toString()}`
+    const { data } = await axios.get<OpenseaAssetsResponse>(url)
+    return data
   }
 }

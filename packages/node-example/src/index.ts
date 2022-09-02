@@ -42,14 +42,14 @@ async function accounts() {
 }
 
 async function getProfile() {
-  const profile = await client.profile.get('did:nft3:laozhang')
+  const profile = await client.profile.info('did:nft3:laozhang')
   console.log(profile)
 }
 
 async function setProfile() {
   try {
     await client.did.auth()
-    await client.profile.set({
+    await client.profile.update({
       name: 'Laozhang',
       avatar: 'ipfs://QmSAnbgZSwuCiFcw1u912UqETfVxnKPqkKH8YGr1mirGSu',
       bio: "I'm Laozhang",
@@ -154,7 +154,8 @@ async function verifyProof() {
     proof:
       'c27eb0858955ad7e1722b2f45a5d3f733db6ced22c35d65bc512fdcf4e19df0758da82c5d77692f37fe7aeaab24955fbd3afe9ece37f00d491e7d5da11a1a6bc01',
     account: 'Bart200c',
-    type: 'twitter'
+    type: 'twitter',
+    verifier_key: ''
   }
   const result = verifier.verifyProof(info)
   console.log(result)
@@ -166,9 +167,6 @@ async function query() {
     tokens: {
       did: 'did:nft3:alice',
       limit: 2
-    },
-    nfts: {
-      did: 'did:nft3:alice'
     }
   })
   console.log(data)

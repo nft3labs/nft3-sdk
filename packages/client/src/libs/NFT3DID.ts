@@ -5,8 +5,17 @@ import { joinSignature, arrayify } from '@ethersproject/bytes'
 import { toUtf8Bytes } from '@ethersproject/strings'
 import { Signer } from '@ethersproject/abstract-signer'
 import { SigningKey, recoverPublicKey } from '@ethersproject/signing-key'
+
 import NFT3Client from './NFT3Client'
+
 export type NetworkType = 'ethereum' | 'solana'
+export interface DIDInfo {
+  addresses: string[]
+  created_at: number
+  ctrl_keys: string[]
+  did: string
+  updated_at: number
+}
 
 const SessionExpires = 72 * 3600
 const SignExpires = 300
@@ -127,18 +136,29 @@ export default class NFT3DID {
    * @param msg
    * @returns
    */
-  private async ctrlSign(msg: Record<string, any>) {
-    msg.sign_expired_at = Math.trunc(Date.now() / 1000 + SignExpires)
-    msg.session_key = this.signer.publicKey
-    msg.session_key_expired_at = Math.trunc(Date.now() / 1000 + SessionExpires)
-    const message = this.formatMessage(msg)
+  // private async ctrlSign(msg: Record<string, any>) {
+  //   msg.sign_expired_at = Math.trunc(Date.now() / 1000 + SignExpires)
+  //   const message = this.formatMessage(msg)
+  //   const signature = await this.wallet.signMessage(message)
+  //   const signHash = arrayify(hashMessage(message))
+  //   const publicKey = recoverPublicKey(signHash, signature)
+  //   return {
+  //     ctrlKey: `${this.network}:${publicKey}`,
+  //     ctrlSign: signature
+  //   }
+  // }
+
+  private async ctrlSign(params: {
+    msg: Record<string, any>
+    [propName: string]: any
+  }) {
+    params.msg.sign_expired_at = Math.trunc(Date.now() / 1000 + SignExpires)
+    const message = this.formatMessage(params.msg)
     const signature = await this.wallet.signMessage(message)
     const signHash = arrayify(hashMessage(message))
     const publicKey = recoverPublicKey(signHash, signature)
-    return {
-      ctrlKey: `${this.network}:${publicKey}`,
-      ctrlSign: signature
-    }
+    params.ctrl_key = `${this.network}:${publicKey}`
+    params.ctrl_sign = signature
   }
 
   /**
@@ -148,15 +168,14 @@ export default class NFT3DID {
    */
   async register(identifier: string) {
     await this.init()
-    const msg: Record<string, any> = {
-      identifier
-    }
-    const { ctrlKey, ctrlSign } = await this.ctrlSign(msg)
     const params = {
-      msg,
-      ctrl_key: ctrlKey,
-      ctrl_sign: ctrlSign
+      msg: {
+        identifier,
+        session_key: this.signer.publicKey,
+        session_key_expired_at: Math.trunc(Date.now() / 1000 + SessionExpires)
+      }
     }
+    await this.ctrlSign(params)
     const result = await this.client.send<string>('nft3_did_register', params)
     return {
       result: true,
@@ -169,13 +188,13 @@ export default class NFT3DID {
    */
   async login() {
     await this.init()
-    const msg = {}
-    const { ctrlKey, ctrlSign } = await this.ctrlSign(msg)
     const params = {
-      msg,
-      ctrl_key: ctrlKey,
-      ctrl_sign: ctrlSign
+      msg: {
+        session_key: this.signer.publicKey,
+        session_key_expired_at: Math.trunc(Date.now() / 1000 + SessionExpires)
+      }
     }
+    await this.ctrlSign(params)
     const result = await this.client.send<string>('nft3_did_login', params)
     this.identifier = result
     return {
@@ -207,6 +226,7 @@ export default class NFT3DID {
         identifier: result
       }
     } catch (error) {
+      console.trace(error)
       return {
         result: false
       }
@@ -219,16 +239,15 @@ export default class NFT3DID {
    */
   async addKey() {
     const subParams: any = { msg: {} }
-    const { ctrlKey, ctrlSign } = await this.ctrlSign(subParams.msg)
-    subParams.ctrl_key = ctrlKey
-    subParams.ctrl_sign = ctrlSign
-    const result = await this.send('nft3_did_keys_add', {
+    await this.ctrlSign(subParams)
+    const params = {
       msg: {
-        msg: JSON.stringify(subParams),
-        new_ctrl_key: ctrlKey,
-        new_ctrl_sign: ctrlSign
+        msg: JSON.stringify(subParams.msg),
+        new_ctrl_key: subParams.ctrl_key,
+        new_ctrl_sign: subParams.ctrl_sign
       }
-    })
+    }
+    await this.send('nft3_did_keys_add', params)
     return {
       result: true
     }
@@ -240,16 +259,15 @@ export default class NFT3DID {
    */
   async removeKey() {
     const subParams: any = { msg: {} }
-    const { ctrlKey, ctrlSign } = await this.ctrlSign(subParams.msg)
-    subParams.ctrl_key = ctrlKey
-    subParams.ctrl_sign = ctrlSign
-    const result = await this.send('nft3_did_keys_remove', {
+    await this.ctrlSign(subParams)
+    const params = {
       msg: {
-        msg: JSON.stringify(subParams),
-        remove_ctrl_key: ctrlKey,
-        remove_ctrl_sign: ctrlSign
+        msg: JSON.stringify(subParams.msg),
+        remove_ctrl_key: subParams.ctrl_key,
+        remove_ctrl_sign: subParams.ctrl_sign
       }
-    })
+    }
+    await this.send('nft3_did_keys_remove', params)
     return {
       result: true
     }
@@ -260,9 +278,30 @@ export default class NFT3DID {
    * @returns
    */
   async accounts() {
-    const result = await this.send('nft3_did_address', {
+    const result = await this.send<string[]>('nft3_did_address', {
       msg: {}
     })
     return result
+  }
+
+  /**
+   * get did detail info
+   * @param identifier
+   */
+  async info(identifier?: string) {
+    identifier = identifier || this.client.did.identifier
+    const result = await this.client.send<DIDInfo>('nft3_did_info', {
+      did: identifier
+    })
+    return result
+  }
+
+  /**
+   * conver didname to identifier
+   * @param didname
+   * @returns identifier
+   */
+  convertName(didname: string) {
+    return `did:nft3:${didname?.replace(/\.isme$/, '')}`
   }
 }

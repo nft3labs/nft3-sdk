@@ -20,19 +20,26 @@ export default class NFT3Profile {
     this.model = client.model('profile')
   }
 
-  async get(identifier?: string) {
+  async info(identifier?: string) {
     identifier = identifier || this.client.did.identifier
     if (!identifier) throw new Error('identifier required')
     const profile = await this.model.findOne({
-      controller: identifier,
+      identifier,
       query: {}
     })
-    return profile
+    return profile || undefined
   }
 
-  async set(profile: ProfileModel) {
+  async update(profile: ProfileModel) {
     if (!this.client.did.identifier) throw new Error('authentication required')
-    const record = await this.get()
+    profile.name = profile.name || ''
+    profile.avatar = profile.avatar || ''
+    profile.bio = profile.bio || ''
+    profile.gender = profile.gender || ''
+    profile.url = profile.url || ''
+    profile.location = profile.location || ''
+    profile.attrs = profile.attrs || []
+    const record = await this.info()
     if (!record) await this.model.insertOne(profile)
     else await this.model.updateOne(record.dataId, profile)
   }

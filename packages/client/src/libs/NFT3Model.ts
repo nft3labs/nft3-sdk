@@ -1,7 +1,7 @@
 import NFT3Client from './NFT3Client'
 
 export interface FindOptions {
-  controller?: string
+  identifier?: string
   query: Record<string, any>
   fields?: string[]
   offset?: number
@@ -28,7 +28,7 @@ export default class NFT3Model<T = any> {
 
   async find(options: FindOptions) {
     const params = {
-      did: options.controller,
+      did: options.identifier,
       modelid: this.modelId,
       query: options.query,
       offset: options.offset || 0,
@@ -50,7 +50,7 @@ export default class NFT3Model<T = any> {
 
   async findOne(options: FindOptions) {
     const result = await this.find(options)
-    return result[0] || null
+    return result[0] || undefined
   }
 
   async insertOne(data: T) {
@@ -74,6 +74,19 @@ export default class NFT3Model<T = any> {
       modelid: this.modelId,
       dataid: dataId,
       update: data
+    }
+    const result = await this.client.did.send('nft3_appdata_mutation', params)
+    return {
+      dataId: result
+    }
+  }
+
+  async deleteOne(dataId: string) {
+    const params = {
+      msg: {},
+      modelid: this.modelId,
+      dataid: dataId,
+      remove: true
     }
     const result = await this.client.did.send('nft3_appdata_mutation', params)
     return {

@@ -1,0 +1,26 @@
+@font-face {
+  font-family: 'Space Mono';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(./mono-latin.woff2) format('woff2');
+}
+@font-face {
+  font-family: 'Facit';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url(./Facit-Light.woff2) format('woff2');
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background-color: var(--color-bg-1);
+  color: var(--color-text-1);
+  font-family: 'Facit';
+}
+.main {
+  padding-top: 60px;
+}

@@ -9,6 +9,7 @@ export interface VerifyInfo {
   did: string
   type: string
   account: string
+  verifier_key: string
 }
 
 export interface VerifyResult extends VerifyInfo {
@@ -31,20 +32,22 @@ export default class NFT3Verifier {
   requestTwitter() {
     const message = 'Allow this App to verify your Twitter account'
     const { msghash, signature } = this.client.did.sign(message)
-    const text = `NFT3 signed for ${this.client.did.identifier}, sig: ${signature}`
+    const text = `NFT3 signed for ${
+      this.client.did.identifier
+    }, sig: ${signature.replace(/^0x/, '')}`
     const link = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
       text
     )}`
     return {
       link,
       text,
-      msghash
+      msghash: msghash.replace(/^0x/, '')
     }
   }
 
   async verifyTwitter(account: string, msghash: string) {
     const params = new URLSearchParams()
-    params.set('did', 'did:nft3:alice')
+    params.set('did', this.client.did.identifier)
     params.set('account', account)
     params.set('msghash', msghash.replace(/^0x/, ''))
     const query = params.toString()
@@ -52,19 +55,23 @@ export default class NFT3Verifier {
     const { data } = await this.request.get(url)
     const info: VerifyResult = {
       result: data.data.result,
-      proof: '0x' + data.data.proof,
+      proof: data.data.proof,
       did: data.data.did,
       type: data.data.social_type,
-      account: data.data.social_account
+      account: data.data.social_account,
+      verifier_key: data.data.verifier_key
     }
     return info
   }
 
-  verifyProof(info: VerifyInfo) {
+  verifyProof(info: VerifyInfo, verifierKey?: string) {
+    verifierKey = verifierKey || this.verifierKey
     const message = `NFT3-Verifier:\n${info.did}\n${info.type}\n${info.account}`
     const signHash = id(message)
-    const publicKey = recoverPublicKey(signHash, '0x' + info.proof)
-    const result = publicKey === this.verifierKey
+    let proof = info.proof
+    if (proof.startsWith('0x') === false) proof = '0x' + proof
+    const publicKey = recoverPublicKey(signHash, proof)
+    const result = publicKey === verifierKey
     return result
   }
 }

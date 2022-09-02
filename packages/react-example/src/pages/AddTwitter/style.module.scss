@@ -1,0 +1,40 @@
+.wrap {
+  max-width: 800px;
+  margin: auto;
+  padding: 30px 20px;
+}
+.title {
+  font-size: 26px;
+  font-family: 'Space Mono';
+}
+.card {
+  padding: 25px 30px;
+  border-radius: 10px;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-2);
+  margin-top: 30px;
+  display: flex;
+  align-items: center;
+}
+.cardMain {
+  flex: 1;
+  margin-right: 10px;
+}
+.cardTitle {
+  font-size: 20px;
+  font-weight: 600;
+  font-family: 'Space Mono';
+}
+.cardText {
+  font-size: 18px;
+  line-height: 1.6em;
+  margin-top: 10px;
+  color: var(--color-text-2);
+
+  span {
+    margin-left: 5px;
+  }
+}
+.red {
+  color: rgb(var(--red-5));
+}
