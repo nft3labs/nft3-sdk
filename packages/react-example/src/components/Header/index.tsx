@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Button, Dropdown, Menu, Modal } from '@arco-design/web-react'
 import { useNFT3 } from '@nft3sdk/did-manager'
@@ -9,8 +9,7 @@ import WalletSelect from '@components/WalletSelect'
 export default function Header() {
   const navigate = useNavigate()
   const [selectVisible, setSelectVisible] = useState(false)
-  const { account, didname, needRegister, ready, login, selectWallet, logout } =
-    useNFT3()
+  const { account, didname, ready, login, selectWallet, logout } = useNFT3()
 
   const onLogout = () => {
     Modal.confirm({
@@ -23,9 +22,12 @@ export default function Header() {
     })
   }
 
-  useEffect(() => {
-    if (needRegister) navigate('/register')
-  }, [needRegister, navigate])
+  const onLogin = async () => {
+    const info = await login()
+    if (info.result === false && info.needRegister === true) {
+      navigate('/register')
+    }
+  }
 
   const renderBtn = () => {
     if (!account) {
@@ -46,7 +48,7 @@ export default function Header() {
           type="primary"
           shape="round"
           size="large"
-          onClick={login}
+          onClick={onLogin}
           loading={!ready}
         >
           Login NFT3
@@ -60,7 +62,10 @@ export default function Header() {
             <Menu.Item key="profile" onClick={() => navigate('/' + didname)}>
               Your profile
             </Menu.Item>
-            <Menu.Item key="settings" onClick={() => navigate('/home/settings')}>
+            <Menu.Item
+              key="settings"
+              onClick={() => navigate('/home/settings')}
+            >
               Settings
             </Menu.Item>
             <Menu.Item key="wallets" onClick={() => navigate('/home/wallets')}>

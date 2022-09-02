@@ -18,16 +18,21 @@ import NFT3Register from '../components/NFT3Register'
 
 type NFT3Theme = 'light' | 'dark'
 
+interface LoginResult {
+  result: boolean
+  needRegister: boolean
+  identifier?: string
+}
+
 interface NFT3Context {
   account?: string
   client: NFT3Client
   didname?: string
   ready?: boolean
-  needRegister: boolean
   theme: NFT3Theme
   identifier?: string
   connect: () => void
-  login: () => Promise<string | undefined>
+  login: () => Promise<LoginResult>
   register: (didname: string) => Promise<string>
   logout: () => void
   checkLogin: () => Promise<string | undefined>
@@ -99,19 +104,28 @@ function useWebNFT3(endpoint: string) {
 
   // DID login
   const login = useCallback(async () => {
+    const info: LoginResult = {
+      result: false,
+      needRegister: false,
+      identifier: undefined
+    }
     try {
       const result = await client.did.login()
       setIdentifier(result.identifier)
       if (client.did.signKey) {
         sessionStorage.setItem('sessionKey', client.did.signKey)
       }
-      return result.identifier
+      info.result = true
+      info.identifier = result.identifier
     } catch (error: any) {
       if (error.code === 32033) {
         setNeedRegister(true)
+        info.needRegister = true
       } else {
         throw error
       }
+    } finally {
+      return info
     }
   }, [client])
 
@@ -201,13 +215,16 @@ function createNFT3Context() {
     account: undefined,
     didname: undefined,
     theme: 'light',
-    needRegister: false,
     connect: () => {},
     eagerConnect: () => {},
     disconnect: () => {},
     logout: () => {},
     checkLogin: () => Promise.resolve(undefined),
-    login: () => Promise.resolve(undefined),
+    login: () => Promise.resolve({
+      result: false,
+      needRegister: false,
+      identifier: undefined
+    }),
     register: () => Promise.resolve(''),
     selectWallet: () => {}
   })
@@ -256,7 +273,6 @@ function createNFT3Context() {
           ready,
           theme,
           identifier,
-          needRegister,
           login,
           logout,
           register,
