@@ -122,6 +122,7 @@ function useWebNFT3(endpoint: string) {
         setNeedRegister(true)
         info.needRegister = true
       } else {
+        console.trace(error)
         throw error
       }
     } finally {
@@ -158,8 +159,10 @@ function useWebNFT3(endpoint: string) {
     let wallet: IWallet
     if (type === 'MetaMask') {
       wallet = new EthereumWallet('MetaMask')
-    } else {
+    } else if (type === 'Phantom') {
       wallet = new SolanaWallet('Phantom')
+    } else {
+      throw new Error('Invalid wallet type')
     }
     await wallet.connect(silent)
     localStorage.setItem('wallet', type)
@@ -220,11 +223,12 @@ function createNFT3Context() {
     disconnect: () => {},
     logout: () => {},
     checkLogin: () => Promise.resolve(undefined),
-    login: () => Promise.resolve({
-      result: false,
-      needRegister: false,
-      identifier: undefined
-    }),
+    login: () =>
+      Promise.resolve({
+        result: false,
+        needRegister: false,
+        identifier: undefined
+      }),
     register: () => Promise.resolve(''),
     selectWallet: () => {}
   })
@@ -262,6 +266,7 @@ function createNFT3Context() {
     const disconnect = async () => {
       nft3Wallet?.disconnect()
       setAccount(undefined)
+      localStorage.removeItem('wallet')
     }
 
     return (

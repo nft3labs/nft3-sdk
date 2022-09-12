@@ -5,6 +5,7 @@ interface INote {
   content: string
 }
 
+const solanaKey = 'Rrcv7QxrxCMr5JR9fvAmtt2NqFLNUdFFZdGZvqjowQDCQd5uR8XZnzWYh9xSuUQXTPbTTMAX4EfhHAyy4eA9ET7'
 const privateKey = `0x71c9b1ea922e10a1d16da953dddfafa80c96c5a7049e4e968898e94ab9c72c39`
 const gatewayEndpoint = 'http://t0.onebitdev.com:10000/'
 const queryerEndpoint = 'http://t0.onebitdev.com:10001/'
@@ -12,12 +13,36 @@ const verifierEndpoint = 'http://t0.onebitdev.com:10002/'
 const postModelId = 'testmodel-post'
 const postDataId = '206708bb-5c25-4a7f-a772-9ac6da69e0c3'
 
+const solanaClient = new NFT3Client(gatewayEndpoint)
+solanaClient.did.config({
+  network: 'solana',
+  privateKey: solanaKey
+})
+
 const client = new NFT3Client(gatewayEndpoint)
 client.did.config({
   network: 'ethereum',
   privateKey
 })
 const verifier = new NFT3Verifier(client, verifierEndpoint)
+
+async function solanaRegister() {
+  try {
+    const result = await solanaClient.did.register('laozhao')
+    console.log(result)
+  } catch (error) {
+    console.trace(error)
+  }
+}
+
+async function solanaLogin() {
+  try {
+    const result = await solanaClient.did.login()
+    console.log(result)
+  } catch (error) {
+    console.trace(error)
+  }
+}
 
 async function register() {
   const result = await client.did.register('laozhang')
@@ -172,4 +197,44 @@ async function query() {
   console.log(data)
 }
 
-getProfile()
+async function follow() {
+  await client.did.auth()
+  const result = await client.follow.follow('did:nft3:cat')
+  console.log(result)
+}
+
+async function unfollow() {
+  await client.did.auth()
+  const result = await client.follow.unfollow('did:nft3:cat')
+  console.log(result)
+}
+
+async function followCount() {
+  const result = await client.follow.count('did:nft3:laozhang')
+  console.log(result)
+}
+
+async function following() {
+  const result = await client.follow.following({
+    identifier: 'did:nft3:laozhang'
+  })
+  console.log(result)
+}
+
+async function followers() {
+  const result = await client.follow.followers({
+    identifier: 'did:nft3:cat'
+  })
+  console.log(result)
+}
+
+async function count() {
+  const noteModel = client.model('follow')
+  const result = await noteModel.count({
+    identifier: 'did:nft3:laozhang',
+    count: {}
+  })
+  console.log(result)
+}
+
+followers()

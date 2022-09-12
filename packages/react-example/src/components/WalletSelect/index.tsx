@@ -2,9 +2,10 @@ import { useRef, useEffect } from 'react'
 import { Modal } from '@arco-design/web-react'
 
 import styles from './style.module.scss'
+import { ReactComponent as Phantom } from '@assets/phantom.svg'
 import { ReactComponent as MetaMask } from '@assets/metamask.svg'
 
-type WalletType = 'MetaMask'
+type WalletType = 'MetaMask' | 'Phantom'
 
 interface Props {
   visible: boolean
@@ -38,6 +39,10 @@ export default function WalletSelect({ visible, onClose }: Props) {
         <div className={styles.item} onClick={() => select('MetaMask')}>
           <span>MetaMask</span>
           <MetaMask className={styles.icon} />
+        </div>
+        <div className={styles.item} onClick={() => select('Phantom')}>
+          <span>Phantom</span>
+          <Phantom className={styles.icon} />
         </div>
       </div>
     </Modal>

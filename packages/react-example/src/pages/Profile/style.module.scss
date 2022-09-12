@@ -1,6 +1,6 @@
 .notfound {
   font-size: 36px;
-  font-family: 'Space Mono';
+  font-family: 'Trispace';
   text-align: center;
   height: calc(100vh - 60px);
   display: flex;
@@ -19,7 +19,7 @@
   align-items: center;
   gap: 5px;
   text-align: center;
-  font-family: 'Space Mono';
+  font-family: 'Trispace';
 }
 .avatar {
   width: 150px;
@@ -91,4 +91,7 @@
   margin-left: 5px;
   width: 20px;
   height: 20px;
+}
+.follow {
+  padding: 5px 0;
 }

@@ -3,17 +3,20 @@ import NFT3DID from './NFT3DID'
 import NFT3Schema from './NFT3Schema'
 import NFT3Model from './NFT3Model'
 import NFT3Profile from './NFT3Profile'
+import NFT3Follow from './NFT3Follow'
 import NFT3SocialAccount from './NFT3SocialAccount'
 
 export default class NFT3Client {
   private gateway: NFT3Gateway
   profile: NFT3Profile
   did: NFT3DID
+  follow: NFT3Follow
   socialAccount: NFT3SocialAccount
 
   constructor(endpoint: string) {
     this.gateway = new NFT3Gateway(endpoint)
     this.did = new NFT3DID(this)
+    this.follow = new NFT3Follow(this)
     this.profile = new NFT3Profile(this)
     this.socialAccount = new NFT3SocialAccount(this)
   }

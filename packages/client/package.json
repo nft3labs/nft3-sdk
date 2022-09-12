@@ -13,6 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "@ethersproject/abstract-signer": "^5.6.2",
+    "@ethersproject/basex": "^5.7.0",
     "@ethersproject/bytes": "^5.6.1",
     "@ethersproject/hash": "^5.6.1",
     "@ethersproject/sha2": "^5.6.1",
@@ -21,7 +22,8 @@
     "@ethersproject/units": "^5.7.0",
     "@ethersproject/wallet": "^5.6.2",
     "@types/json-schema": "^7.0.11",
-    "axios": "^0.27.2"
+    "axios": "^0.27.2",
+    "tweetnacl": "^1.0.3"
   },
   "devDependencies": {
     "del": "6.1.1",

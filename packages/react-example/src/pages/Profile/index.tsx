@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useNFT3 } from '@nft3sdk/did-manager'
 import {
@@ -19,19 +19,23 @@ import useAssets from '@hooks/useAssets'
 import useIpfs from '@hooks/useIpfs'
 import useProfile from '@hooks/useProfile'
 import useSocial from '@hooks/useSocial'
+import useFollow from '@hooks/useFollow'
 import * as util from '@libs/util'
 
 export default function Profile() {
   const { format } = useIpfs()
-  const { client } = useNFT3()
+  const { client, identifier } = useNFT3()
   const { didname } = useParams()
-  const identifier = useMemo(() => {
+  const did = useMemo(() => {
     return client.did.convertName(didname!)
   }, [didname, client.did])
+  const [loading, setLoading] = useState(false)
+  const [followed, setFollowed] = useState(false)
   const [ready, setReady] = useState(false)
   const { socials, list } = useSocial()
-  const { tokens, nfts, txs, openseaAssets } = useAssets(identifier)
-  const { profile, didinfo, info } = useProfile(identifier)
+  const { count, getCount, check, follow, unfollow } = useFollow()
+  const { tokens, nfts, txs, openseaAssets } = useAssets(did)
+  const { profile, didinfo, info } = useProfile(did)
 
   const twitterAccount = useMemo(() => {
     const record = socials.find(
@@ -39,6 +43,46 @@ export default function Profile() {
     )
     return record
   }, [socials])
+
+  const checkFollow = useCallback(async () => {
+    const result = await check(identifier!, did)
+    setFollowed(result)
+  }, [check, did, identifier])
+
+  const followDID = async () => {
+    try {
+      setLoading(true)
+      await follow(did)
+      getCount(did)
+      checkFollow()
+    } catch (error: any) {
+      Message.error(error.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const unfollowDID = async () => {
+    try {
+      setLoading(true)
+      await unfollow(did)
+      getCount(did)
+      checkFollow()
+    } catch (error: any) {
+      Message.error(error.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    if (!identifier) return
+    checkFollow()
+  }, [checkFollow, identifier])
+
+  useEffect(() => {
+    if (did) getCount(did)
+  }, [did, getCount])
 
   useEffect(() => {
     const handle = Message.loading({
@@ -52,8 +96,8 @@ export default function Profile() {
   }, [info])
 
   useEffect(() => {
-    list(identifier)
-  }, [list, identifier])
+    list(did)
+  }, [list, did])
 
   useEffect(() => {
     if (didinfo?.addresses?.length) {
@@ -204,6 +248,28 @@ export default function Profile() {
               @{twitterAccount.account}
             </Link>
             <IconVerified className={styles.verified} />
+          </div>
+        )}
+        <Space>
+          <div>Following {count.following}</div>
+          <div>Followers {count.followers}</div>
+        </Space>
+        {!!identifier && (
+          <div className={styles.follow}>
+            {followed ? (
+              <Button
+                type="primary"
+                status="danger"
+                onClick={unfollowDID}
+                loading={loading}
+              >
+                Unfollow
+              </Button>
+            ) : (
+              <Button type="primary" onClick={followDID} loading={loading}>
+                Follow
+              </Button>
+            )}
           </div>
         )}
       </div>

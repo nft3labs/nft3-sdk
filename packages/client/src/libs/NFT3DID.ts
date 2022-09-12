@@ -1,14 +1,15 @@
-import { id, hashMessage } from '@ethersproject/hash'
+import { id } from '@ethersproject/hash'
 import { sha256 } from '@ethersproject/sha2'
-import { Wallet } from '@ethersproject/wallet'
-import { joinSignature, arrayify } from '@ethersproject/bytes'
+import { joinSignature } from '@ethersproject/bytes'
 import { toUtf8Bytes } from '@ethersproject/strings'
 import { Signer } from '@ethersproject/abstract-signer'
-import { SigningKey, recoverPublicKey } from '@ethersproject/signing-key'
+import { SigningKey } from '@ethersproject/signing-key'
 
 import NFT3Client from './NFT3Client'
+import EthereumWallet from '../wallets/EthereumWallet'
+import SolanaWallet from '../wallets/SolanaWallet'
+import { NetworkType, NFT3Wallet } from '../types/model'
 
-export type NetworkType = 'ethereum' | 'solana'
 export interface DIDInfo {
   addresses: string[]
   created_at: number
@@ -21,9 +22,8 @@ const SessionExpires = 72 * 3600
 const SignExpires = 300
 
 export default class NFT3DID {
-  private network: NetworkType
   private client: NFT3Client
-  private wallet?: Wallet | Signer
+  private wallet?: NFT3Wallet
   public signKey?: string
   public signer?: SigningKey
   public identifier = ''
@@ -38,13 +38,20 @@ export default class NFT3DID {
     signKey?: string
     signer?: Signer
   }) {
-    this.network = options.network
     this.signKey = options.signKey
-    if (options.privateKey) {
-      this.wallet = new Wallet(options.privateKey)
+    if (options.network === 'ethereum') {
+      this.wallet = new EthereumWallet({
+        network: options.network,
+        privateKey: options.privateKey,
+        signer: options.signer
+      })
     }
-    if (options.signer) {
-      this.wallet = options.signer
+    if (options.network === 'solana') {
+      this.wallet = new SolanaWallet({
+        network: options.network,
+        privateKey: options.privateKey,
+        signer: options.signer
+      })
     }
     if (this.signKey) {
       this.signer = new SigningKey(this.signKey)
@@ -57,9 +64,9 @@ export default class NFT3DID {
   async init() {
     if (this.signKey) return this.signKey
     const message = 'Allow this account to control your did'
-    const signature = await this.wallet?.signMessage(message)
-    if (signature) {
-      this.signKey = sha256(signature)
+    const { signatureBuffer } = await this.wallet?.signMessage(message)
+    if (signatureBuffer) {
+      this.signKey = sha256(signatureBuffer)
       this.signer = new SigningKey(this.signKey)
       return this.signKey
     }
@@ -67,10 +74,12 @@ export default class NFT3DID {
 
   async auth() {
     this.init()
-    let identifier = await this.checkLogin()
-    if (identifier) return identifier
-    identifier = await this.login()
-    if (identifier) return identifier
+    const { result, identifier } = await this.checkLogin()
+    if (result === true) return identifier
+    else {
+      const { result, identifier } = await this.login()
+      if (result === true) return identifier
+    }
     return undefined
   }
 
@@ -131,33 +140,14 @@ export default class NFT3DID {
     return this.client.send<T>(method, params)
   }
 
-  /**
-   * ctrl key signature
-   * @param msg
-   * @returns
-   */
-  // private async ctrlSign(msg: Record<string, any>) {
-  //   msg.sign_expired_at = Math.trunc(Date.now() / 1000 + SignExpires)
-  //   const message = this.formatMessage(msg)
-  //   const signature = await this.wallet.signMessage(message)
-  //   const signHash = arrayify(hashMessage(message))
-  //   const publicKey = recoverPublicKey(signHash, signature)
-  //   return {
-  //     ctrlKey: `${this.network}:${publicKey}`,
-  //     ctrlSign: signature
-  //   }
-  // }
-
   private async ctrlSign(params: {
     msg: Record<string, any>
     [propName: string]: any
   }) {
     params.msg.sign_expired_at = Math.trunc(Date.now() / 1000 + SignExpires)
     const message = this.formatMessage(params.msg)
-    const signature = await this.wallet.signMessage(message)
-    const signHash = arrayify(hashMessage(message))
-    const publicKey = recoverPublicKey(signHash, signature)
-    params.ctrl_key = `${this.network}:${publicKey}`
+    const { signature, publicKey } = await this.wallet.signMessage(message)
+    params.ctrl_key = `${this.wallet.network}:${publicKey}`
     params.ctrl_sign = signature
   }
 
@@ -187,19 +177,27 @@ export default class NFT3DID {
    * login did
    */
   async login() {
-    await this.init()
-    const params = {
-      msg: {
-        session_key: this.signer.publicKey,
-        session_key_expired_at: Math.trunc(Date.now() / 1000 + SessionExpires)
+    try {
+      await this.init()
+      const params = {
+        msg: {
+          session_key: this.signer.publicKey,
+          session_key_expired_at: Math.trunc(Date.now() / 1000 + SessionExpires)
+        }
       }
-    }
-    await this.ctrlSign(params)
-    const result = await this.client.send<string>('nft3_did_login', params)
-    this.identifier = result
-    return {
-      result: true,
-      identifier: result
+      await this.ctrlSign(params)
+      const result = await this.client.send<string>('nft3_did_login', params)
+      this.identifier = result
+      return {
+        result: true,
+        identifier: result
+      }
+    } catch (error) {
+      console.trace(error)
+      return {
+        result: false,
+        identifier: undefined
+      }
     }
   }
 
@@ -226,7 +224,6 @@ export default class NFT3DID {
         identifier: result
       }
     } catch (error) {
-      console.trace(error)
       return {
         result: false
       }

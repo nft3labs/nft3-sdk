@@ -5,6 +5,7 @@ import { DIDInfo } from './libs/NFT3DID'
 import { WithMeta } from './libs/NFT3Model'
 import { ProfileModel } from './libs/NFT3Profile'
 import { SocialAccountModel } from './libs/NFT3SocialAccount'
+import { FollowMember } from './libs/NFT3Follow'
 import {
   TokenRecord,
   TxRecord,
@@ -25,5 +26,6 @@ export {
   POAPEvent,
   WithMeta,
   OpenseaAssetsRecord,
-  SocialAccountModel
+  SocialAccountModel,
+  FollowMember
 }

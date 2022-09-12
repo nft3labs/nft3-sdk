@@ -1,14 +1,20 @@
 import NFT3Client from './NFT3Client'
 
-export interface FindOptions {
+export interface FindOptions<T = any> {
   identifier?: string
-  query: Record<string, any>
+  query: Partial<T>
   fields?: string[]
   offset?: number
   limit?: number
 }
 
+export interface CountOptions<T = any> {
+  identifier?: string
+  count: Partial<T>
+}
+
 export type WithMeta<T> = T & {
+  __owner: string
   createdAt: number
   updatedAt: number
   dataId: string
@@ -26,7 +32,7 @@ export default class NFT3Model<T = any> {
     this.modelId = modelId
   }
 
-  async find(options: FindOptions) {
+  async find(options: FindOptions<T>) {
     const params = {
       did: options.identifier,
       modelid: this.modelId,
@@ -48,7 +54,7 @@ export default class NFT3Model<T = any> {
     return items
   }
 
-  async findOne(options: FindOptions) {
+  async findOne(options: FindOptions<T>) {
     const result = await this.find(options)
     return result[0] || undefined
   }
@@ -75,9 +81,9 @@ export default class NFT3Model<T = any> {
       dataid: dataId,
       update: data
     }
-    const result = await this.client.did.send('nft3_appdata_mutation', params)
+    await this.client.did.send('nft3_appdata_mutation', params)
     return {
-      dataId: result
+      dataId
     }
   }
 
@@ -88,9 +94,21 @@ export default class NFT3Model<T = any> {
       dataid: dataId,
       remove: true
     }
-    const result = await this.client.did.send('nft3_appdata_mutation', params)
+    await this.client.did.send('nft3_appdata_mutation', params)
     return {
-      dataId: result
+      dataId
+    }
+  }
+
+  async count(options: CountOptions) {
+    const params = {
+      did: options.identifier,
+      modelid: this.modelId,
+      count: options.count
+    }
+    const result = await this.client.send('nft3_appdata_query', params)
+    return {
+      count: result.count as number
     }
   }
 }

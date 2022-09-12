@@ -1,5 +1,5 @@
 export type NetworkType = 'Ethereum' | 'Solana'
-export type WalletType = 'MetaMask' | 'WalletConnect' | 'Phantom'
+export type WalletType = 'MetaMask' | 'Phantom'
 export interface IWallet {
   wallet: WalletType
   network: NetworkType

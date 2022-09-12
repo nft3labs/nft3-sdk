@@ -9,7 +9,7 @@ import WalletSelect from '@components/WalletSelect'
 export default function Header() {
   const navigate = useNavigate()
   const [selectVisible, setSelectVisible] = useState(false)
-  const { account, didname, ready, login, selectWallet, logout } = useNFT3()
+  const { account, didname, ready, login, disconnect, selectWallet, logout } = useNFT3()
 
   const onLogout = () => {
     Modal.confirm({
@@ -57,6 +57,7 @@ export default function Header() {
     }
     return (
       <Dropdown
+        trigger="click"
         droplist={
           <Menu>
             <Menu.Item key="profile" onClick={() => navigate('/' + didname)}>
@@ -73,6 +74,9 @@ export default function Header() {
             </Menu.Item>
             <Menu.Item key="social" onClick={() => navigate('/home/socials')}>
               Social accounts
+            </Menu.Item>
+            <Menu.Item key="disconnect" onClick={disconnect}>
+              Disconnect
             </Menu.Item>
             <Menu.Item key="logout" onClick={onLogout}>
               Logout
