@@ -3,6 +3,6 @@
 ## Get started
 
 ```shell
-lerna bootstrap
-lerna run build
+pnpm install
+pnpm -r build
 ```

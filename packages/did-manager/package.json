@@ -2,8 +2,8 @@
   "name": "@nft3sdk/did-manager",
   "version": "0.1.0",
   "description": "",
-  "main": "libs/cjs/index.js",
-  "module": "libs/es/index.js",
+  "main": "dist/cjs/index.js",
+  "module": "dist/es/index.js",
   "scripts": {
     "dev": "gulp --dev",
     "build": "gulp"
@@ -17,6 +17,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/react": "^18.0.17",
     "del": "6.1.1",
     "eslint": "^8.22.0",
     "eslint-config-react-app": "^7.0.1",
@@ -24,10 +25,11 @@
     "gulp-sass": "^5.1.0",
     "gulp-typescript": "6.0.0-alpha.1",
     "react": "^18.2.0",
-    "sass": "^1.54.4"
+    "sass": "^1.54.4",
+    "typescript": "^4.6.4"
   },
   "dependencies": {
     "@ethersproject/providers": "^5.6.8",
-    "@nft3sdk/client": "*"
+    "@nft3sdk/client": "workspace:*"
   }
 }

@@ -6,7 +6,7 @@ const del = require('del')
 const isDev = process.argv[2] === '--dev'
 
 function clean() {
-  return del('./libs/**')
+  return del('./dist/**')
 }
 
 function buildStyle(dir) {
@@ -16,7 +16,7 @@ function buildStyle(dir) {
         base: './src/'
       })
       .pipe(sass())
-      .pipe(gulp.dest(`./libs/${dir}`))
+      .pipe(gulp.dest(`./dist/${dir}`))
   }
 }
 
@@ -24,7 +24,7 @@ function copyAssets(dir) {
   return () => {
     return gulp
       .src('./src/assets/**/*')
-      .pipe(gulp.dest(`./libs/${dir}/assets/`))
+      .pipe(gulp.dest(`./dist/${dir}/assets/`))
   }
 }
 
@@ -43,7 +43,7 @@ function buildJs(dir) {
           moduleResolution: 'node'
         })
       )
-      .pipe(gulp.dest(`./libs/${dir}`))
+      .pipe(gulp.dest(`./dist/${dir}`))
   }
 }
 

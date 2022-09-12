@@ -1,5 +1,3 @@
 node_modules/
-packages/*/dist/
-packages/client/libs/
-packages/did-manager/libs/
+dist/
 .vscode/

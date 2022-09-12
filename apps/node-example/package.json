@@ -9,7 +9,10 @@
     "dev": "tsc -w"
   },
   "dependencies": {
-    "@nft3sdk/client": "*"
+    "@nft3sdk/client": "workspace:*"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^4.6.4"
+  }
 }

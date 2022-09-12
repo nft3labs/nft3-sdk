@@ -5,7 +5,7 @@ const del = require('del')
 const isDev = process.argv[2] === '--dev'
 
 function clean() {
-  return del('./libs/**')
+  return del('./dist/**')
 }
 
 function buildJs(dir) {
@@ -26,7 +26,7 @@ function buildJs(dir) {
           allowSyntheticDefaultImports: true
         })
       )
-      .pipe(gulp.dest(`./libs/${dir}`))
+      .pipe(gulp.dest(`./dist/${dir}`))
   }
 }
 

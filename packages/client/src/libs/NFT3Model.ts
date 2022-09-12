@@ -2,7 +2,7 @@ import NFT3Client from './NFT3Client'
 
 export interface FindOptions<T = any> {
   identifier?: string
-  query: Partial<T>
+  query: Partial<T> & { dataid?: string }
   fields?: string[]
   offset?: number
   limit?: number
