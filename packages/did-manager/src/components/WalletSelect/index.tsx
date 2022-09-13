@@ -1,9 +1,8 @@
 import { useRef } from 'react'
 
-import './style.css'
 import NFT3Modal from '../NFT3Modal'
-import IconMetamask from '../../assets/metamask.svg'
-import IconPhantom from '../../assets/phantom.svg'
+import IconMetamask from './MetaMask'
+import IconPhantom from './Phantom'
 import { WalletType } from '../../libs/types'
 
 interface Props {
@@ -13,7 +12,7 @@ interface Props {
 
 interface IWalletItem {
   wallet: WalletType
-  icon: string
+  icon: any
   link: string
   check: () => boolean
 }
@@ -69,7 +68,7 @@ export default function WalletSelect({ visible, onClose }: Props) {
             }}
           >
             <span>{item.check() ? item.wallet : `Install ${item.wallet}`}</span>
-            <img src={item.icon} alt="" className="nft3-wallet__icon" />
+            <item.icon className="nft3-wallet__icon" />
           </div>
         ))}
       </div>

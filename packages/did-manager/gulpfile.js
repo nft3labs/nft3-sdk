@@ -9,22 +9,14 @@ function clean() {
   return del('./dist/**')
 }
 
-function buildStyle(dir) {
+function buildStyle() {
   return () => {
     return gulp
-      .src(['./src/**/*.scss'], {
+      .src(['./src/styles/style.scss'], {
         base: './src/'
       })
       .pipe(sass())
-      .pipe(gulp.dest(`./dist/${dir}`))
-  }
-}
-
-function copyAssets(dir) {
-  return () => {
-    return gulp
-      .src('./src/assets/**/*')
-      .pipe(gulp.dest(`./dist/${dir}/assets/`))
+      .pipe(gulp.dest(`./dist/`))
   }
 }
 
@@ -54,10 +46,8 @@ if (isDev) {
       gulp.series(
         buildJs('cjs'),
         buildStyle('cjs'),
-        copyAssets('cjs'),
         buildJs('es'),
-        buildStyle('es'),
-        copyAssets('es')
+        buildStyle('es')
       )
     )
   }
@@ -66,9 +56,7 @@ if (isDev) {
     clean,
     buildJs('cjs'),
     buildStyle('cjs'),
-    copyAssets('cjs'),
     buildJs('es'),
-    buildStyle('es'),
-    copyAssets('es')
+    buildStyle('es')
   )
 }

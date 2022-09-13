@@ -1,5 +1,4 @@
 import { PropsWithChildren } from 'react'
-import './style.css'
 
 interface Props {
   disabled?: boolean

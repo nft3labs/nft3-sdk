@@ -1,6 +1,5 @@
-import { useCallback, useState } from 'react'
+import { useState } from 'react'
 
-import './style.css'
 import NFT3Modal from '../NFT3Modal'
 import NFT3Button from '../NFT3Button'
 import { useNFT3 } from '../../hooks/webNFT3'

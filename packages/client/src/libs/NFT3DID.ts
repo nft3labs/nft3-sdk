@@ -190,13 +190,14 @@ export default class NFT3DID {
       this.identifier = result
       return {
         result: true,
-        identifier: result
+        identifier: result,
+        needRegister: false
       }
     } catch (error) {
-      console.trace(error)
       return {
         result: false,
-        identifier: undefined
+        identifier: undefined,
+        needRegister: error.code === 32033
       }
     }
   }

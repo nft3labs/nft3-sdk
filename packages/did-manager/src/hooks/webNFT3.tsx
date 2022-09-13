@@ -104,30 +104,13 @@ function useWebNFT3(endpoint: string) {
 
   // DID login
   const login = useCallback(async () => {
-    const info: LoginResult = {
-      result: false,
-      needRegister: false,
-      identifier: undefined
+    const result: LoginResult = await client.did.login()
+    setIdentifier(result.identifier)
+    if (client.did.signKey) {
+      sessionStorage.setItem('sessionKey', client.did.signKey)
     }
-    try {
-      const result = await client.did.login()
-      setIdentifier(result.identifier)
-      if (client.did.signKey) {
-        sessionStorage.setItem('sessionKey', client.did.signKey)
-      }
-      info.result = true
-      info.identifier = result.identifier
-    } catch (error: any) {
-      if (error.code === 32033) {
-        setNeedRegister(true)
-        info.needRegister = true
-      } else {
-        console.trace(error)
-        throw error
-      }
-    } finally {
-      return info
-    }
+    setNeedRegister(result.needRegister)
+    return result
   }, [client])
 
   // DID logout

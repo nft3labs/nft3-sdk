@@ -1,5 +1,4 @@
 import { PropsWithChildren } from 'react'
-import './style.css'
 import { useNFT3 } from '../../hooks/webNFT3'
 
 interface Props {
