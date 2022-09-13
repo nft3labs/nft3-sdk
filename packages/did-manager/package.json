@@ -13,9 +13,12 @@
       "react-app"
     ]
   },
+  "files": [
+    "dist"
+  ],
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "@types/react": "^18.0.17",
     "del": "6.1.1",
