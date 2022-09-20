@@ -23,10 +23,25 @@ export default class NFT3Profile {
   async info(identifier?: string) {
     identifier = identifier || this.client.did.identifier
     if (!identifier) throw new Error('identifier required')
-    const profile = await this.model.findOne({
+    let profile = await this.model.findOne({
       identifier,
       query: {}
     })
+    if (!profile) {
+      profile = {
+        __owner: identifier,
+        dataId: '',
+        name: '',
+        avatar: '',
+        bio: '',
+        url: '',
+        gender: '',
+        location: '',
+        attrs: [],
+        createdAt: 0,
+        updatedAt: 0
+      }
+    }
     return profile || undefined
   }
 
@@ -40,7 +55,7 @@ export default class NFT3Profile {
     profile.location = profile.location || ''
     profile.attrs = profile.attrs || []
     const record = await this.info()
-    if (!record) await this.model.insertOne(profile)
+    if (!record || !record.dataId) await this.model.insertOne(profile)
     else await this.model.updateOne(record.dataId, profile)
   }
 }

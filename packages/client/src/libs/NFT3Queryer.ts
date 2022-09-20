@@ -60,6 +60,12 @@ export interface POAPRecord {
   event: POAPEvent
 }
 
+export interface TimelineRecord {
+  item: TxRecord | POAPRecord
+  timestamp: string
+  type: 'txs' | 'poaps'
+}
+
 export interface QueryParams {
   did: string
   network?: string
@@ -71,6 +77,7 @@ export interface QueryOptions {
   tokens?: QueryParams
   txs?: QueryParams
   poaps?: QueryParams
+  timeline?: Pick<QueryParams, 'did' | 'limit' | 'offset'>
 }
 
 export interface QueryResponse {
@@ -78,6 +85,7 @@ export interface QueryResponse {
   txs: TxRecord[]
   nfts: NFTRecord[]
   poaps: POAPRecord[]
+  timeline: TimelineRecord
 }
 
 export interface OpenseaAssetsOptions {
@@ -183,12 +191,56 @@ export default class NFT3Queryer {
     return query
   }
 
+  private timelineQuery() {
+    const query = `timeline(did: $timelineDid, offset: $timelineOffset, limit: $timelineLimit) {
+      item {
+        ... on POAP {
+          tokenId
+          owner
+          network
+          created
+          event {
+            id
+            fancy_id
+            name
+            event_url
+            image_url
+            country
+            city
+            description
+            year
+            start_date
+            end_date
+            expiry_date
+            supply
+          }
+        }
+        ... on Transaction {
+          network
+          symbol
+          hash
+          from
+          to
+          amount
+          blocknum
+          timestamp
+          contract
+        }
+      }
+      timestamp
+      type
+    }`
+    return query
+  }
+
   private buildVars(options: QueryOptions) {
     const vars: any = {}
     const keys = Object.keys(options)
     for (const key of keys) {
       vars[`${key}Did`] = options[key].did
-      vars[`${key}Network`] = options[key].network || null
+      if (key !== 'timeline') {
+        vars[`${key}Network`] = options[key].network || null
+      }
       vars[`${key}Offset`] = options[key].offset || 0
       vars[`${key}Limit`] = options[key].limit || 10
     }
@@ -200,12 +252,20 @@ export default class NFT3Queryer {
     let query: string[] = []
     let body = []
     for (const key of keys) {
-      query = query.concat([
-        `$${key}Did: String!`,
-        `$${key}Network: String`,
-        `$${key}Offset: Int`,
-        `$${key}Limit: Int`
-      ])
+      if (key !== 'timeline') {
+        query = query.concat([
+          `$${key}Did: String!`,
+          `$${key}Network: String`,
+          `$${key}Offset: Int`,
+          `$${key}Limit: Int`
+        ])
+      } else {
+        query = query.concat([
+          `$${key}Did: String!`,
+          `$${key}Offset: Int`,
+          `$${key}Limit: Int`
+        ])
+      }
       const method = Reflect.get(this, `${key}Query`)
       body.push(Reflect.apply(method, this, []))
     }
@@ -243,8 +303,8 @@ export default class NFT3Queryer {
 
   /**
    * list opensea assets, available in browser only
-   * @param options 
-   * @returns 
+   * @param options
+   * @returns
    */
   async openseaAssets(options: OpenseaAssetsOptions) {
     let limit = options.limit

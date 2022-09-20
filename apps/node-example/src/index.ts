@@ -197,6 +197,23 @@ async function query() {
   console.log(data)
 }
 
+async function timeline() {
+  const queryer = new NFT3Queryer(queryerEndpoint)
+  const data = await queryer.query({
+    tokens: {
+      did: 'did:nft3:cat',
+      offset: 0,
+      limit: 5
+    },
+    timeline: {
+      did: 'did:nft3:cat',
+      offset: 0,
+      limit: 5
+    }
+  })
+  console.log(data)
+}
+
 async function follow() {
   await client.did.auth()
   const result = await client.follow.follow('did:nft3:cat')
@@ -237,4 +254,4 @@ async function count() {
   console.log(result)
 }
 
-followers()
+timeline()
