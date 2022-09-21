@@ -28,18 +28,21 @@ export default class NFT3Profile {
       query: {}
     })
     if (!profile) {
-      profile = {
-        __owner: identifier,
-        dataId: '',
-        name: '',
-        avatar: '',
-        bio: '',
-        url: '',
-        gender: '',
-        location: '',
-        attrs: [],
-        createdAt: 0,
-        updatedAt: 0
+      const result = await this.client.did.info(identifier)
+      if (result) {
+        profile = {
+          __owner: identifier,
+          dataId: '',
+          name: identifier.split(':')[2],
+          avatar: '',
+          bio: '',
+          url: '',
+          gender: '',
+          location: '',
+          attrs: [],
+          createdAt: result.created_at,
+          updatedAt: result.updated_at
+        }
       }
     }
     return profile || undefined

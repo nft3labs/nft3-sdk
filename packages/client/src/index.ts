@@ -11,6 +11,8 @@ import {
   TxRecord,
   NFTRecord,
   POAPEvent,
+  ENSRecord,
+  TimelineRecord,
   OpenseaAssetsRecord
 } from './libs/NFT3Queryer'
 
@@ -27,5 +29,7 @@ export {
   WithMeta,
   OpenseaAssetsRecord,
   SocialAccountModel,
-  FollowMember
+  FollowMember,
+  ENSRecord,
+  TimelineRecord
 }

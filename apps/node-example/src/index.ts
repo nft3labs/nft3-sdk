@@ -67,7 +67,7 @@ async function accounts() {
 }
 
 async function getProfile() {
-  const profile = await client.profile.info('did:nft3:laozhang')
+  const profile = await client.profile.info('did:nft3:laozhao')
   console.log(profile)
 }
 
@@ -209,6 +209,9 @@ async function timeline() {
       did: 'did:nft3:cat',
       offset: 0,
       limit: 5
+    },
+    ens: {
+      did: 'did:nft3:cat'
     }
   })
   console.log(data)
@@ -254,4 +257,4 @@ async function count() {
   console.log(result)
 }
 
-timeline()
+getProfile()

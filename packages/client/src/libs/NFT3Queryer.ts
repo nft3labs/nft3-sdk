@@ -66,6 +66,11 @@ export interface TimelineRecord {
   type: 'txs' | 'poaps'
 }
 
+export interface ENSRecord {
+  name: string
+  owner: string
+}
+
 export interface QueryParams {
   did: string
   network?: string
@@ -77,6 +82,7 @@ export interface QueryOptions {
   tokens?: QueryParams
   txs?: QueryParams
   poaps?: QueryParams
+  ens?: Pick<QueryParams, 'did'>
   timeline?: Pick<QueryParams, 'did' | 'limit' | 'offset'>
 }
 
@@ -85,7 +91,8 @@ export interface QueryResponse {
   txs: TxRecord[]
   nfts: NFTRecord[]
   poaps: POAPRecord[]
-  timeline: TimelineRecord
+  ens: ENSRecord[]
+  timeline: TimelineRecord[]
 }
 
 export interface OpenseaAssetsOptions {
@@ -123,7 +130,7 @@ export default class NFT3Queryer {
     })
   }
 
-  private tokensQuery() {
+  private tokensQuery(options: QueryParams) {
     const query = `tokens(did: $tokensDid, network: $tokensNetwork, offset: $tokensOffset, limit: $tokensLimit) {
     network
     symbol
@@ -134,10 +141,21 @@ export default class NFT3Queryer {
     price
     icon
   }`
-    return query
+    const vars = `$tokensDid: String!, $tokensNetwork: String, $tokensOffset: Int, $tokensLimit: Int`
+    const params = {
+      tokensDid: options.did,
+      tokensNetwork: options.network || null,
+      tokensOffset: options.offset || 0,
+      tokensLimit: options.limit || 10
+    }
+    return {
+      query,
+      vars,
+      params
+    }
   }
 
-  private txsQuery() {
+  private txsQuery(options: QueryParams) {
     const query = `txs(did: $txsDid, network: $txsNetwork, offset: $txsOffset, limit: $txsLimit) {
     network
     symbol
@@ -149,10 +167,21 @@ export default class NFT3Queryer {
     timestamp
     contract
   }`
-    return query
+    const vars = `$txsDid: String!, $txsNetwork: String, $txsOffset: Int, $txsLimit: Int`
+    const params = {
+      txsDid: options.did,
+      txsNetwork: options.network || null,
+      txsOffset: options.offset || 0,
+      txsLimit: options.limit || 10
+    }
+    return {
+      query,
+      vars,
+      params
+    }
   }
 
-  private nftsQuery() {
+  private nftsQuery(options: QueryParams) {
     const query = `nfts(did: $nftsDid, network: $nftsNetwork, offset: $nftsOffset, limit: $nftsLimit) {
     network
     owner
@@ -163,10 +192,21 @@ export default class NFT3Queryer {
     description
     token_standard
   }`
-    return query
+    const vars = `$nftsDid: String!, $nftsNetwork: String, $nftsOffset: Int, $nftsLimit: Int`
+    const params = {
+      nftsDid: options.did,
+      nftsNetwork: options.network || null,
+      nftsOffset: options.offset || 0,
+      nftsLimit: options.limit || 10
+    }
+    return {
+      query,
+      vars,
+      params
+    }
   }
 
-  private poapsQuery() {
+  private poapsQuery(options: QueryParams) {
     const query = `poaps(did: $poapsDid, network: $poapsNetwork, offset: $poapsOffset, limit: $poapsLimit) {
     tokenId
     owner
@@ -188,10 +228,37 @@ export default class NFT3Queryer {
       supply
     }
   }`
-    return query
+    const vars = `$poapsDid: String!, $poapsNetwork: String, $poapsOffset: Int, $poapsLimit: Int`
+    const params = {
+      poapsDid: options.did,
+      poapsNetwork: options.network || null,
+      poapsOffset: options.offset || 0,
+      poapsLimit: options.limit || 10
+    }
+    return {
+      query,
+      vars,
+      params
+    }
   }
 
-  private timelineQuery() {
+  private ensQuery(options: QueryParams) {
+    const query = `ens(did: $ensDid) {
+      name
+      owner
+    }`
+    const vars = `$ensDid: String!`
+    const params = {
+      ensDid: options.did
+    }
+    return {
+      query,
+      vars,
+      params
+    }
+  }
+
+  private timelineQuery(options: QueryParams) {
     const query = `timeline(did: $timelineDid, offset: $timelineOffset, limit: $timelineLimit) {
       item {
         ... on POAP {
@@ -230,58 +297,49 @@ export default class NFT3Queryer {
       timestamp
       type
     }`
-    return query
-  }
-
-  private buildVars(options: QueryOptions) {
-    const vars: any = {}
-    const keys = Object.keys(options)
-    for (const key of keys) {
-      vars[`${key}Did`] = options[key].did
-      if (key !== 'timeline') {
-        vars[`${key}Network`] = options[key].network || null
-      }
-      vars[`${key}Offset`] = options[key].offset || 0
-      vars[`${key}Limit`] = options[key].limit || 10
+    const vars = `$timelineDid: String!, $timelineOffset: Int, $timelineLimit: Int`
+    const params = {
+      timelineDid: options.did,
+      timelineOffset: options.offset || 0,
+      timelineLimit: options.limit || 10
     }
-    return vars
+    return {
+      query,
+      vars,
+      params
+    }
   }
 
   private buildQuery(options: QueryOptions) {
     const keys = Object.keys(options)
-    let query: string[] = []
-    let body = []
+    const querys: string[] = []
+    const bodys = []
+    let variables: any = {}
     for (const key of keys) {
-      if (key !== 'timeline') {
-        query = query.concat([
-          `$${key}Did: String!`,
-          `$${key}Network: String`,
-          `$${key}Offset: Int`,
-          `$${key}Limit: Int`
-        ])
-      } else {
-        query = query.concat([
-          `$${key}Did: String!`,
-          `$${key}Offset: Int`,
-          `$${key}Limit: Int`
-        ])
-      }
       const method = Reflect.get(this, `${key}Query`)
-      body.push(Reflect.apply(method, this, []))
+      const { query, vars, params } = Reflect.apply(method, this, [options[key]])
+      bodys.push(query)
+      querys.push(vars)
+      variables = {
+        ...variables,
+        ...params
+      }
     }
-    const queryStr = query.join(', ')
+    const queryStr = querys.join(', ')
     const content = `query NFT3Query(${queryStr}) {
-      ${body.join('\n')}
+      ${bodys.join('\n')}
     }`
-    return content
+    return {
+      query: content,
+      variables
+    }
   }
 
   async query<T extends keyof QueryOptions>(
     options: Pick<QueryOptions, T>
   ): Promise<Pick<QueryResponse, T>> {
     try {
-      const query = this.buildQuery(options)
-      const variables = this.buildVars(options)
+      const { query, variables } = this.buildQuery(options)
       const operationName = 'NFT3Query'
       const { data } = await this.request.post('/gql', {
         operationName,
