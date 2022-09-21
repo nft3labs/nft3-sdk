@@ -44,6 +44,7 @@ export default function useAssets(identifier: string) {
       }
     })
     setTokens(data.tokens)
+    setTxs(data.txs)
     setEns(data.ens)
     setTimeline(data.timeline)
   }, [identifier, queryer])
