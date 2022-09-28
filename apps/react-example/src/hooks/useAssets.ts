@@ -16,7 +16,7 @@ export default function useAssets(identifier: string) {
   const [timeline, setTimeline] = useState<TimelineRecord[]>([])
 
   const queryer = useMemo(() => {
-    return new NFT3Queryer('http://t0.onebitdev.com:10001/')
+    return new NFT3Queryer('https://t0.onebitdev.com/nft3-queryer/')
   }, [])
 
   const listAssets = useCallback(async () => {

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Button, Dropdown, Menu, Modal } from '@arco-design/web-react'
-import { useNFT3 } from '@nft3sdk/did-manager'
+import { Button, Dropdown, Menu, Modal, Message } from '@arco-design/web-react'
+import { useNFT3, WalletType } from '@nft3sdk/did-manager'
 
 import styles from './style.module.scss'
 import WalletSelect from '@components/WalletSelect'
@@ -10,6 +10,19 @@ export default function Header() {
   const navigate = useNavigate()
   const [selectVisible, setSelectVisible] = useState(false)
   const { account, didname, ready, login, disconnect, selectWallet, logout } = useNFT3()
+
+  const onConnect = async (wallet: WalletType) => {
+    try {
+      console.log('start')
+      const address = await selectWallet(wallet)
+      console.log(address)
+    } catch (error: any) {
+      Message.error(error.message)
+      console.trace(error)
+    } finally {
+      console.log('end')
+    }
+  }
 
   const onLogout = () => {
     Modal.confirm({
@@ -103,7 +116,7 @@ export default function Header() {
       <WalletSelect
         visible={selectVisible}
         onClose={wallet => {
-          if (wallet) selectWallet(wallet)
+          if (wallet) onConnect(wallet)
           setSelectVisible(false)
         }}
       />

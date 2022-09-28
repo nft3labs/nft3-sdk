@@ -38,7 +38,7 @@ interface NFT3Context {
   checkLogin: () => Promise<string | undefined>
   eagerConnect: () => void
   disconnect: () => void
-  selectWallet: (wallet: WalletType) => void
+  selectWallet: (wallet: WalletType) => Promise<string>
 }
 
 interface IContexts {
@@ -158,6 +158,7 @@ function useWebNFT3(endpoint: string) {
     setWallet(type)
     setNft3Wallet(wallet)
     setAccount(wallet.account || undefined)
+    return wallet.account!
   }
 
   // eager connect wallet
@@ -213,7 +214,7 @@ function createNFT3Context() {
         identifier: undefined
       }),
     register: () => Promise.resolve(''),
-    selectWallet: () => {}
+    selectWallet: () => Promise.resolve('')
   })
   const Provider = context.value.Provider
 

@@ -7,7 +7,7 @@ import '@arco-design/web-react/dist/css/arco.css'
 import './assets/global.scss'
 import App from './pages/App'
 
-const endpoint = 'http://t0.onebitdev.com:10000/'
+const endpoint = 'https://t0.onebitdev.com/nft3-gateway/'
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <ConfigProvider locale={enUS}>
