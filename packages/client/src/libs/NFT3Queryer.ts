@@ -341,7 +341,7 @@ export default class NFT3Queryer {
     try {
       const { query, variables } = this.buildQuery(options)
       const operationName = 'NFT3Query'
-      const { data } = await this.request.post('/gql', {
+      const { data } = await this.request.post('/', {
         operationName,
         query,
         variables
