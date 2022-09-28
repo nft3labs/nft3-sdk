@@ -7,9 +7,9 @@ interface INote {
 
 const solanaKey = 'Rrcv7QxrxCMr5JR9fvAmtt2NqFLNUdFFZdGZvqjowQDCQd5uR8XZnzWYh9xSuUQXTPbTTMAX4EfhHAyy4eA9ET7'
 const privateKey = `0x71c9b1ea922e10a1d16da953dddfafa80c96c5a7049e4e968898e94ab9c72c39`
-const gatewayEndpoint = 'http://t0.onebitdev.com:10000/'
-const queryerEndpoint = 'http://t0.onebitdev.com:10001/'
-const verifierEndpoint = 'http://t0.onebitdev.com:10002/'
+const gatewayEndpoint = 'https://t0.onebitdev.com/nft3-gateway/'
+const queryerEndpoint = 'https://t0.onebitdev.com/nft3-queryer/'
+const verifierEndpoint = 'https://t0.onebitdev.com/nft3-verifier/'
 const postModelId = 'testmodel-post'
 const postDataId = '206708bb-5c25-4a7f-a772-9ac6da69e0c3'
 
