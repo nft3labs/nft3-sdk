@@ -208,6 +208,7 @@ export default class NFT3DID {
   async logout() {
     this.signKey = undefined
     this.signer = undefined
+    this.identifier = ''
   }
 
   /**

@@ -9,7 +9,7 @@ import WalletSelect from '@components/WalletSelect'
 export default function Header() {
   const navigate = useNavigate()
   const [selectVisible, setSelectVisible] = useState(false)
-  const { account, didname, ready, login, disconnect, selectWallet, logout } = useNFT3()
+  const { client, account, didname, ready, login, disconnect, selectWallet, logout } = useNFT3()
 
   const onConnect = async (wallet: WalletType) => {
     try {
@@ -31,6 +31,7 @@ export default function Header() {
       onOk: () => {
         logout()
         navigate('/')
+        console.log(client)
       }
     })
   }

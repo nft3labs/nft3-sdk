@@ -113,6 +113,11 @@ export interface OpenseaAssetsRecord {
     symbol: string
   }
   token_id: string
+  collection: {
+    name: string
+    [propName: string]: any
+  }
+  [propName: string]: any
 }
 
 export interface OpenseaAssetsResponse {

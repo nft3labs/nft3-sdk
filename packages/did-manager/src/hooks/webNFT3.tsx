@@ -117,7 +117,8 @@ function useWebNFT3(endpoint: string) {
   const logout = useCallback(() => {
     setIdentifier(undefined)
     sessionStorage.removeItem('sessionKey')
-  }, [])
+    client.did.logout()
+  }, [client.did])
 
   // check did login status
   const checkLogin = useCallback(async () => {
