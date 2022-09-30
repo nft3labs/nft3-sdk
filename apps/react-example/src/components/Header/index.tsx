@@ -9,13 +9,30 @@ import WalletSelect from '@components/WalletSelect'
 export default function Header() {
   const navigate = useNavigate()
   const [selectVisible, setSelectVisible] = useState(false)
-  const { client, account, didname, ready, login, disconnect, selectWallet, logout } = useNFT3()
+  const {
+    client,
+    account,
+    didname,
+    ready,
+    login,
+    disconnect,
+    selectWallet,
+    logout
+  } = useNFT3()
+
+  const onLogin = async () => {
+    const info = await login()
+    if (info.result === false && info.needRegister === true) {
+      navigate('/register')
+    }
+  }
 
   const onConnect = async (wallet: WalletType) => {
     try {
       console.log('start')
       const address = await selectWallet(wallet)
       console.log(address)
+      await onLogin()
     } catch (error: any) {
       Message.error(error.message)
       console.trace(error)
@@ -34,13 +51,6 @@ export default function Header() {
         console.log(client)
       }
     })
-  }
-
-  const onLogin = async () => {
-    const info = await login()
-    if (info.result === false && info.needRegister === true) {
-      navigate('/register')
-    }
   }
 
   const renderBtn = () => {

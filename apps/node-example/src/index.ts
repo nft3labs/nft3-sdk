@@ -257,4 +257,4 @@ async function count() {
   console.log(result)
 }
 
-getProfile()
+login()

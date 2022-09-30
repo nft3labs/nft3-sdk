@@ -96,6 +96,10 @@ function useWebNFT3(endpoint: string) {
   const register = useCallback(
     async (identifier: string) => {
       const result = await client.did?.register(identifier)
+      setIdentifier(result.identifier)
+      if (client.did.signKey) {
+        sessionStorage.setItem('sessionKey', client.did.signKey)
+      }
       setReady(true)
       return result.identifier
     },

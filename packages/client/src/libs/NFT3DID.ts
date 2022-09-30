@@ -38,7 +38,6 @@ export default class NFT3DID {
     signKey?: string
     signer?: Signer
   }) {
-    this.signKey = options.signKey
     if (options.network === 'ethereum') {
       this.wallet = new EthereumWallet({
         network: options.network,
@@ -53,8 +52,11 @@ export default class NFT3DID {
         signer: options.signer
       })
     }
-    if (this.signKey) {
-      this.signer = new SigningKey(this.signKey)
+    if (options.signKey) {
+      if (/^0x([0-9a-f]{64})$/i.test(options.signKey)) {
+        this.signKey = options.signKey
+        this.signer = new SigningKey(this.signKey)
+      }
     }
   }
 
@@ -76,10 +78,6 @@ export default class NFT3DID {
     this.init()
     const { result, identifier } = await this.checkLogin()
     if (result === true) return identifier
-    else {
-      const { result, identifier } = await this.login()
-      if (result === true) return identifier
-    }
     return undefined
   }
 
@@ -167,6 +165,7 @@ export default class NFT3DID {
     }
     await this.ctrlSign(params)
     const result = await this.client.send<string>('nft3_did_register', params)
+    this.identifier = result
     return {
       result: true,
       identifier: result
@@ -179,19 +178,11 @@ export default class NFT3DID {
   async login() {
     try {
       await this.init()
-      const params = {
-        msg: {
-          session_key: this.signer.publicKey,
-          session_key_expired_at: Math.trunc(Date.now() / 1000 + SessionExpires)
-        }
-      }
-      await this.ctrlSign(params)
-      const result = await this.client.send<string>('nft3_did_login', params)
-      this.identifier = result
+      const { identifier } = await this.checkLogin()
       return {
-        result: true,
-        identifier: result,
-        needRegister: false
+        result: !!identifier,
+        identifier,
+        needRegister: !identifier
       }
     } catch (error) {
       return {
@@ -205,7 +196,7 @@ export default class NFT3DID {
   /**
    * DID logout
    */
-  async logout() {
+  logout() {
     this.signKey = undefined
     this.signer = undefined
     this.identifier = ''

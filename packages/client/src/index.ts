@@ -14,7 +14,8 @@ import {
   ENSRecord,
   POAPRecord,
   TimelineRecord,
-  OpenseaAssetsRecord
+  OpenseaAssetsRecord,
+  ENSTextRecord
 } from './libs/NFT3Queryer'
 
 export {
@@ -33,5 +34,6 @@ export {
   SocialAccountModel,
   FollowMember,
   ENSRecord,
-  TimelineRecord
+  TimelineRecord,
+  ENSTextRecord
 }

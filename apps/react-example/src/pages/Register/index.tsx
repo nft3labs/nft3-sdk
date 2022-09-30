@@ -18,7 +18,7 @@ export default function Register() {
       const identifier = await register(username)
       if (identifier) {
         navigate('/')
-        Message.success('DID created, please try to login again')
+        Message.success('DID created')
       }
     } catch (error) {
       console.trace(error)

@@ -1,10 +1,10 @@
 import { useCallback, useState } from 'react'
-import { ProfileModel, DIDInfo } from '@nft3sdk/client'
+import { ProfileModel, DIDInfo, WithMeta } from '@nft3sdk/client'
 import { useNFT3 } from '@nft3sdk/did-manager'
 
 export default function useProfile(identifier: string) {
   const [didinfo, setDidinfo] = useState<DIDInfo>()
-  const [profile, setProfile] = useState<ProfileModel>()
+  const [profile, setProfile] = useState<WithMeta<ProfileModel>>()
   const { client } = useNFT3()
 
   const info = useCallback(async () => {

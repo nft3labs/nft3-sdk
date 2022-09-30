@@ -71,6 +71,30 @@ export interface ENSRecord {
   owner: string
 }
 
+export interface ENSTextRecord {
+  snapshot: string
+  email: string
+  'eth.ens.delegate': string
+  'vnd.github': string
+  'org.telegram': string
+  'com.linkedin': string
+  'VND.TELEGRAM': string
+  'com.reddit': string
+  'com.github': string
+  header: string
+  'vnd.telegram': string
+  'com.discord': string
+  description: string
+  'vnd.twitter': string
+  'com.twitter': string
+  url: string
+  name: string
+  keywords: string
+  location: string
+  avatar: string
+  notice: string
+}
+
 export interface QueryParams {
   did: string
   network?: string
@@ -84,6 +108,9 @@ export interface QueryOptions {
   poaps?: QueryParams
   ens?: Pick<QueryParams, 'did'>
   timeline?: Pick<QueryParams, 'did' | 'limit' | 'offset'>
+  ensTextRecords?: {
+    address: string
+  }
 }
 
 export interface QueryResponse {
@@ -93,6 +120,7 @@ export interface QueryResponse {
   poaps: POAPRecord[]
   ens: ENSRecord[]
   timeline: TimelineRecord[]
+  ensTextRecords: ENSTextRecord[]
 }
 
 export interface OpenseaAssetsOptions {
@@ -133,6 +161,21 @@ export default class NFT3Queryer {
     this.request = axios.create({
       baseURL: endpoint.replace(/\/$/, '')
     })
+  }
+
+  private ensTextRecordsQuery(options: { address: string }) {
+    const query = `ensTextRecords(address: $ensTextRecordAddress) {
+      items
+    }`
+    const vars = `$ensTextRecordAddress: String!`
+    const params = {
+      ensTextRecordAddress: options.address
+    }
+    return {
+      query,
+      vars,
+      params
+    }
   }
 
   private tokensQuery(options: QueryParams) {
@@ -322,7 +365,9 @@ export default class NFT3Queryer {
     let variables: any = {}
     for (const key of keys) {
       const method = Reflect.get(this, `${key}Query`)
-      const { query, vars, params } = Reflect.apply(method, this, [options[key]])
+      const { query, vars, params } = Reflect.apply(method, this, [
+        options[key]
+      ])
       bodys.push(query)
       querys.push(vars)
       variables = {
@@ -357,6 +402,10 @@ export default class NFT3Queryer {
           token.balance = Number(formatUnits(token.balance, token.decimals))
           token.balanceUSD = token.price * token.balance
         }
+      }
+      const ensRecords = data.data.ensTextRecords?.items
+      if (ensRecords) {
+        data.data.ensTextRecords = ensRecords
       }
       return data.data
     } catch (error) {

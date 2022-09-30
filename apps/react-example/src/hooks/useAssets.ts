@@ -5,7 +5,9 @@ import {
   OpenseaAssetsRecord,
   TxRecord,
   ENSRecord,
-  TimelineRecord
+  TimelineRecord,
+  ENSTextRecord,
+  POAPRecord
 } from '@nft3sdk/client'
 
 export default function useAssets(identifier: string) {
@@ -13,7 +15,9 @@ export default function useAssets(identifier: string) {
   const [tokens, setTokens] = useState<TokenRecord[]>([])
   const [txs, setTxs] = useState<TxRecord[]>([])
   const [ens, setEns] = useState<ENSRecord[]>([])
+  const [poaps, setPoaps] = useState<POAPRecord[]>([])
   const [timeline, setTimeline] = useState<TimelineRecord[]>([])
+  const [ensRecords, setEnsRecords] = useState<ENSTextRecord[]>([])
 
   const queryer = useMemo(() => {
     return new NFT3Queryer('https://t0.onebitdev.com/nft3-queryer/')
@@ -41,12 +45,17 @@ export default function useAssets(identifier: string) {
       },
       timeline: {
         did: identifier
+      },
+      ensTextRecords: {
+        address: '0x983110309620D911731Ac0932219af06091b6744'
       }
     })
     setTokens(data.tokens)
     setTxs(data.txs)
     setEns(data.ens)
     setTimeline(data.timeline)
+    setEnsRecords(data.ensTextRecords)
+    setPoaps(data.poaps)
   }, [identifier, queryer])
 
   const openseaAssets = useCallback(
@@ -69,7 +78,9 @@ export default function useAssets(identifier: string) {
     nfts,
     txs,
     ens,
+    poaps,
     timeline,
+    ensRecords,
     openseaAssets
   }
 }

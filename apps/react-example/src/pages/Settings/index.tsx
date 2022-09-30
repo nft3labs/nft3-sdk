@@ -20,8 +20,7 @@ export default function Settings() {
     const data = await form.current?.validate()
     try {
       setLoading(true)
-      const result = await update(data)
-      console.log(result)
+      await update(data)
       Message.success('Profile successfully saved')
     } catch (error: any) {
       Message.error(error.message || 'Update failed')
