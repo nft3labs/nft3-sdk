@@ -10,6 +10,17 @@ import EthereumWallet from '../wallets/EthereumWallet'
 import SolanaWallet from '../wallets/SolanaWallet'
 import { NetworkType, NFT3Wallet } from '../types/model'
 
+interface DIDSearchResult {
+  did: string
+  addresses: string[]
+}
+
+export interface DIDSearchRecord {
+  didname: string
+  identifier: string
+  addresses: string[]
+}
+
 export interface DIDInfo {
   addresses: string[]
   created_at: number
@@ -284,6 +295,47 @@ export default class NFT3DID {
       did: identifier
     })
     return result
+  }
+
+  /**
+   * did search
+   * @param params
+   * @returns
+   */
+  async search(params: {
+    keyword: string
+    mode: 'didname' | 'address'
+    offset?: number
+    limit?: number
+  }) {
+    let offset = params.offset || 0
+    let limit = params.limit || 10
+    if (offset < 0) offset = 0
+    if (limit < 1) limit = 1
+    if (limit > 50) limit = 50
+    if (!params.keyword) throw new Error('keyword required')
+    let items: DIDSearchResult[] = []
+    if (params.mode === 'address') {
+      const result = await this.client.send('nft3_did_search', {
+        address: params.keyword,
+        offset,
+        limit
+      })
+      items = result.items || []
+    } else {
+      const result = await this.client.send('nft3_did_search', {
+        did: `did:nft3:${params.keyword}`,
+        offset,
+        limit
+      })
+      items = result.items || []
+    }
+    const results: DIDSearchRecord[] = items.map(item => ({
+      didname: item.did.split(':')[2],
+      identifier: item.did,
+      addresses: item.addresses
+    }))
+    return results
   }
 
   /**

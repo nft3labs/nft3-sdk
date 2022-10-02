@@ -1,7 +1,7 @@
 import NFT3Client from './libs/NFT3Client'
 import NFT3Verifier from './libs/NFT3Verifier'
 import NFT3Queryer from './libs/NFT3Queryer'
-import { DIDInfo } from './libs/NFT3DID'
+import { DIDInfo, DIDSearchRecord } from './libs/NFT3DID'
 import { WithMeta } from './libs/NFT3Model'
 import { ProfileModel } from './libs/NFT3Profile'
 import { SocialAccountModel } from './libs/NFT3SocialAccount'
@@ -35,5 +35,6 @@ export {
   FollowMember,
   ENSRecord,
   TimelineRecord,
-  ENSTextRecord
+  ENSTextRecord,
+  DIDSearchRecord
 }

@@ -257,4 +257,12 @@ async function count() {
   console.log(result)
 }
 
-login()
+async function search() {
+  const result = await client.did.search({
+    keyword: 'n',
+    mode: 'didname'
+  })
+  console.log(result)
+}
+
+search()
