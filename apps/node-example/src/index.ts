@@ -6,7 +6,7 @@ interface INote {
 }
 
 const solanaKey = 'Rrcv7QxrxCMr5JR9fvAmtt2NqFLNUdFFZdGZvqjowQDCQd5uR8XZnzWYh9xSuUQXTPbTTMAX4EfhHAyy4eA9ET7'
-const privateKey = `0x71c9b1ea922e10a1d16da953dddfafa80c96c5a7049e4e968898e94ab9c72c39`
+const privateKey = `0x3d85afd188167058a934ea9c2ab3442ea0adef87ed3162d85e32c3fc59eabc38`
 const gatewayEndpoint = 'https://t0.onebitdev.com/nft3-gateway/'
 const queryerEndpoint = 'https://t0.onebitdev.com/nft3-queryer/'
 const verifierEndpoint = 'https://t0.onebitdev.com/nft3-verifier/'
@@ -45,8 +45,12 @@ async function solanaLogin() {
 }
 
 async function register() {
-  const result = await client.did.register('laozhang')
-  console.log(result)
+  try {
+    const result = await client.did.register('imdaniel')
+    console.log(result)
+  } catch (error) {
+    console.trace(error)
+  }
 }
 
 async function login() {
@@ -55,33 +59,28 @@ async function login() {
 }
 
 async function checkLogin() {
-  await client.did.auth()
+  await client.did.login()
   const result = await client.did.checkLogin()
   console.log(result)
 }
 
 async function accounts() {
-  await client.did.auth()
+  await client.did.login()
   const result = await client.did.accounts()
   console.log(result)
 }
 
 async function getProfile() {
-  const profile = await client.profile.info('did:nft3:laozhao')
+  const profile = await client.profile.info('did:nft3:imdaniel')
   console.log(profile)
 }
 
 async function setProfile() {
   try {
-    await client.did.auth()
+    await client.did.login()
     await client.profile.update({
-      name: 'Laozhang',
-      avatar: 'ipfs://QmSAnbgZSwuCiFcw1u912UqETfVxnKPqkKH8YGr1mirGSu',
-      bio: "I'm Laozhang",
-      location: 'HK',
-      gender: '',
-      url: '',
-      attrs: []
+      name: 'Daniel',
+      bio: 'I\'m Daniel'
     })
   } catch (error) {
     console.trace(error)
@@ -90,7 +89,7 @@ async function setProfile() {
 
 async function createModel() {
   try {
-    await client.did.auth()
+    await client.did.login()
     const appSchema = client.schema()
     const result = await appSchema.create({
       name: 'testmodel-post',
@@ -100,10 +99,12 @@ async function createModel() {
         type: 'object',
         properties: {
           title: {
-            type: 'string'
+            type: 'string',
+            maxLength: 200
           },
           content: {
-            type: 'string'
+            type: 'string',
+            maxLength: 5000
           }
         },
         required: ['title', 'content']
@@ -123,7 +124,7 @@ async function modelInfo() {
 
 async function modelInsert() {
   try {
-    await client.did.auth()
+    await client.did.login()
     const noteModel = client.model<INote>(postModelId)
     const result = await noteModel.insertOne({
       title: 'test title 1',
@@ -140,14 +141,16 @@ async function modelQuery() {
   const result = await noteModel.find({
     query: {
       dataid: postDataId
-    }
+    },
+    offset: 0,
+    limit: 10
   })
   console.log(result)
 }
 
 async function modelUpdate() {
   try {
-    await client.did.auth()
+    await client.did.login()
     const noteModel = client.model<INote>(postModelId)
     await noteModel.updateOne(postDataId, {
       title: 'test title 11a',
@@ -159,13 +162,13 @@ async function modelUpdate() {
 }
 
 async function requestTwitter() {
-  await client.did.auth()
+  await client.did.login()
   const info = verifier.requestTwitter()
   console.log(info)
 }
 
 async function verifyTwitter() {
-  await client.did.auth()
+  await client.did.login()
   const result = await verifier.verifyTwitter(
     'Bart200c',
     '0xe210debb1bad992a0dc373a95f4fbd2d04024d302e498486b214c0af8666f261'
@@ -211,20 +214,20 @@ async function timeline() {
       limit: 5
     },
     ens: {
-      did: 'did:nft3:cat'
+      address: '0x3eb4b12127EdC81A4d2fD49658db07005bcAd065'
     }
   })
   console.log(data)
 }
 
 async function follow() {
-  await client.did.auth()
+  await client.did.login()
   const result = await client.follow.follow('did:nft3:cat')
   console.log(result)
 }
 
 async function unfollow() {
-  await client.did.auth()
+  await client.did.login()
   const result = await client.follow.unfollow('did:nft3:cat')
   console.log(result)
 }
@@ -265,4 +268,9 @@ async function search() {
   console.log(result)
 }
 
-search()
+async function featured() {
+  const result = await client.did.featured()
+  console.log(result)
+}
+
+featured()

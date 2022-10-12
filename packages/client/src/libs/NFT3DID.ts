@@ -9,6 +9,8 @@ import NFT3Client from './NFT3Client'
 import EthereumWallet from '../wallets/EthereumWallet'
 import SolanaWallet from '../wallets/SolanaWallet'
 import { NetworkType, NFT3Wallet } from '../types/model'
+import { WithMeta } from './NFT3Model'
+import { ProfileModel } from './NFT3Profile'
 
 interface DIDSearchResult {
   did: string
@@ -336,6 +338,21 @@ export default class NFT3DID {
       addresses: item.addresses
     }))
     return results
+  }
+
+  /**
+   * featured did
+   * @returns 
+   */
+  async featured() {
+    const dids = await this.client.send<string[]>('nft3_did_featured')
+    const actions = dids.map(did => this.client.profile.info(did))
+    const profiles: WithMeta<ProfileModel>[] = await Promise.all(actions)
+    const items = dids.map((did, i) => ({
+      did,
+      profile: profiles[i]
+    }))
+    return items
   }
 
   /**

@@ -48,17 +48,19 @@ export default class NFT3Profile {
     return profile || undefined
   }
 
-  async update(profile: ProfileModel) {
+  async update(profile: Partial<ProfileModel>) {
     if (!this.client.did.identifier) throw new Error('authentication required')
-    profile.name = profile.name || ''
-    profile.avatar = profile.avatar || ''
-    profile.bio = profile.bio || ''
-    profile.gender = profile.gender || ''
-    profile.url = profile.url || ''
-    profile.location = profile.location || ''
-    profile.attrs = profile.attrs || []
     const record = await this.info()
-    if (!record || !record.dataId) await this.model.insertOne(profile)
-    else await this.model.updateOne(record.dataId, profile)
+    const item: ProfileModel = {
+      name: profile.name || record?.name || '',
+      avatar: profile.avatar || record?.avatar || '',
+      bio: profile.bio || record?.bio || '',
+      gender: profile.gender || record?.gender || '',
+      url: profile.url || record?.url || '',
+      location: profile.location || record?.location || '',
+      attrs: profile.attrs || record?.attrs || []
+    }
+    if (!record || !record.dataId) await this.model.insertOne(item)
+    else await this.model.updateOne(record.dataId, item)
   }
 }

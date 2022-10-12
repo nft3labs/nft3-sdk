@@ -93,6 +93,7 @@ export interface ENSTextRecord {
   location: string
   avatar: string
   notice: string
+  ensName: string
 }
 
 export interface QueryParams {
@@ -106,7 +107,10 @@ export interface QueryOptions {
   tokens?: QueryParams
   txs?: QueryParams
   poaps?: QueryParams
-  ens?: Pick<QueryParams, 'did'>
+  ens?: {
+    did?: string
+    address?: string
+  }
   timeline?: Pick<QueryParams, 'did' | 'limit' | 'offset'>
   ensTextRecords?: {
     address: string
@@ -290,14 +294,15 @@ export default class NFT3Queryer {
     }
   }
 
-  private ensQuery(options: QueryParams) {
-    const query = `ens(did: $ensDid) {
+  private ensQuery(options: any) {
+    const query = `ens(did: $ensDid, address: $ensAddress) {
       name
       owner
     }`
-    const vars = `$ensDid: String!`
+    const vars = `$ensDid: String, $ensAddress: String`
     const params = {
-      ensDid: options.did
+      ensDid: options.did || null,
+      ensAddress: options.address || null
     }
     return {
       query,
