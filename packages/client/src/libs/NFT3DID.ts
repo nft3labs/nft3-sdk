@@ -78,7 +78,7 @@ export default class NFT3DID {
    */
   async init() {
     if (this.signKey) return this.signKey
-    const message = 'Allow this account to control your did'
+    const message = 'Allow this account to control your NFT3 DID'
     const { signatureBuffer } = await this.wallet?.signMessage(message)
     if (signatureBuffer) {
       this.signKey = sha256(signatureBuffer)
@@ -192,6 +192,22 @@ export default class NFT3DID {
     try {
       await this.init()
       const { identifier } = await this.checkLogin()
+      if (!identifier) {
+        const params = {
+          msg: {
+            session_key: this.signer.publicKey,
+            session_key_expired_at: Math.trunc(Date.now() / 1000 + SessionExpires)
+          }
+        }
+        await this.ctrlSign(params)
+        const result = await this.client.send<string>('nft3_did_login', params)
+        this.identifier = result
+        return {
+          result: true,
+          identifier: result,
+          needRegister: false
+        }
+      }
       return {
         result: !!identifier,
         identifier,
