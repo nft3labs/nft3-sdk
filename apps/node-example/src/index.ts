@@ -1,4 +1,4 @@
-import { NFT3Client, NFT3Queryer, NFT3Verifier } from '@nft3sdk/client'
+import { NFT3Client, NFT3Queryer, NFT3Verifier, FeaturedRecord } from '@nft3sdk/client'
 
 interface INote {
   title: string
@@ -269,8 +269,15 @@ async function search() {
 }
 
 async function featured() {
-  const result = await client.did.featured()
-  console.log(result)
+  const queryer = new NFT3Queryer(queryerEndpoint)
+  const result = await queryer.query({
+    nft3Featured: {
+      offset: 0,
+      limit: 5
+    }
+  })
+  const items: FeaturedRecord[] = result.nft3Featured
+  console.log(items)
 }
 
 featured()

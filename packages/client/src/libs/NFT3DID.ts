@@ -357,21 +357,6 @@ export default class NFT3DID {
   }
 
   /**
-   * featured did
-   * @returns 
-   */
-  async featured() {
-    const dids = await this.client.send<string[]>('nft3_did_featured')
-    const actions = dids.map(did => this.client.profile.info(did))
-    const profiles: WithMeta<ProfileModel>[] = await Promise.all(actions)
-    const items = dids.map((did, i) => ({
-      did,
-      profile: profiles[i]
-    }))
-    return items
-  }
-
-  /**
    * conver didname to identifier
    * @param didname
    * @returns identifier

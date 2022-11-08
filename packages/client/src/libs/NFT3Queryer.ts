@@ -115,6 +115,10 @@ export interface QueryOptions {
   ensTextRecords?: {
     address: string
   }
+  nft3Featured?: {
+    offset?: number
+    limit?: number
+  }
 }
 
 export interface QueryResponse {
@@ -125,6 +129,7 @@ export interface QueryResponse {
   ens: ENSRecord[]
   timeline: TimelineRecord[]
   ensTextRecords: ENSTextRecord[]
+  nft3Featured: FeaturedRecord[]
 }
 
 export interface OpenseaAssetsOptions {
@@ -158,6 +163,16 @@ export interface OpenseaAssetsResponse {
   assets: OpenseaAssetsRecord[]
 }
 
+export interface FeaturedRecord {
+  did: string
+  followers: number
+  profile: {
+    name: string
+    bio: string
+    avatar: string
+  }
+}
+
 export default class NFT3Queryer {
   private request: AxiosInstance
 
@@ -165,6 +180,24 @@ export default class NFT3Queryer {
     this.request = axios.create({
       baseURL: endpoint.replace(/\/$/, '')
     })
+  }
+
+  private nft3FeaturedQuery(options: { offset?: number, limit?: number }) {
+    const query = `nft3Featured(offset: $featuredOffset, limit: $featuredLimit) {
+      did
+      followers
+      profile
+    }`
+    const vars = `$featuredOffset: Int!, $featuredLimit: Int!`
+    const params = {
+      featuredOffset: options.offset || 0,
+      featuredLimit: options.limit || 10
+    }
+    return {
+      query,
+      vars,
+      params
+    }
   }
 
   private ensTextRecordsQuery(options: { address: string }) {
@@ -411,6 +444,22 @@ export default class NFT3Queryer {
       const ensRecords = data.data.ensTextRecords?.items
       if (ensRecords) {
         data.data.ensTextRecords = ensRecords
+      }
+      const nft3Featured = data.data.nft3Featured
+      if (nft3Featured) {
+        const items = nft3Featured.map((item: any) => {
+          const profile = {
+            name: item.profile.name,
+            bio: item.profile.bio,
+            avatar: item.profile.avatar
+          }
+          return {
+            did: item.did,
+            followers: Number(item.followers),
+            profile
+          }
+        })
+        data.data.nft3Featured = items
       }
       return data.data
     } catch (error) {

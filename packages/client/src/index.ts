@@ -15,7 +15,8 @@ import {
   POAPRecord,
   TimelineRecord,
   OpenseaAssetsRecord,
-  ENSTextRecord
+  ENSTextRecord,
+  FeaturedRecord
 } from './libs/NFT3Queryer'
 
 export {
@@ -36,5 +37,6 @@ export {
   ENSRecord,
   TimelineRecord,
   ENSTextRecord,
-  DIDSearchRecord
+  DIDSearchRecord,
+  FeaturedRecord
 }
