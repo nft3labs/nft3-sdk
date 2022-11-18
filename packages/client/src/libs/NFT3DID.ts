@@ -9,11 +9,10 @@ import NFT3Client from './NFT3Client'
 import EthereumWallet from '../wallets/EthereumWallet'
 import SolanaWallet from '../wallets/SolanaWallet'
 import { NetworkType, NFT3Wallet } from '../types/model'
-import { WithMeta } from './NFT3Model'
-import { ProfileModel } from './NFT3Profile'
 
 interface DIDSearchResult {
   did: string
+  ctrl_keys: string[]
   addresses: string[]
 }
 
@@ -21,6 +20,7 @@ export interface DIDSearchRecord {
   didname: string
   identifier: string
   addresses: string[]
+  ctrlKeys: string[]
 }
 
 export interface DIDInfo {
@@ -351,7 +351,8 @@ export default class NFT3DID {
     const results: DIDSearchRecord[] = items.map(item => ({
       didname: item.did.split(':')[2],
       identifier: item.did,
-      addresses: item.addresses
+      addresses: item.addresses,
+      ctrlKeys: item.ctrl_keys
     }))
     return results
   }

@@ -262,8 +262,8 @@ async function count() {
 
 async function search() {
   const result = await client.did.search({
-    keyword: 'n',
-    mode: 'didname'
+    keyword: '0xB4c42d4B15AA65F782B81ac01Eaba2472F83B4e9',
+    mode: 'address'
   })
   console.log(result)
 }
@@ -280,4 +280,9 @@ async function featured() {
   console.log(items)
 }
 
-featured()
+async function didInfo() {
+  const result = await client.did.info('did:nft3:test11')
+  console.log(result)
+}
+
+search()
