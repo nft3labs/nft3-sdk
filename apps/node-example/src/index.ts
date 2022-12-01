@@ -192,10 +192,10 @@ async function verifyProof() {
 async function query() {
   const queryer = new NFT3Queryer(queryerEndpoint)
   const data = await queryer.query({
-    tokens: {
-      did: 'did:nft3:alice',
-      limit: 2
-    }
+    ens: {
+      did: 'did:nft3:cat'
+    },
+    nft3Stats: {}
   })
   console.log(data)
 }
@@ -285,4 +285,4 @@ async function didInfo() {
   console.log(result)
 }
 
-search()
+query()

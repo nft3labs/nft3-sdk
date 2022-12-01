@@ -119,6 +119,7 @@ export interface QueryOptions {
     offset?: number
     limit?: number
   }
+  nft3Stats?: {}
 }
 
 export interface QueryResponse {
@@ -130,6 +131,7 @@ export interface QueryResponse {
   timeline: TimelineRecord[]
   ensTextRecords: ENSTextRecord[]
   nft3Featured: FeaturedRecord[]
+  nft3Stats: NFT3Stats
 }
 
 export interface OpenseaAssetsOptions {
@@ -173,6 +175,12 @@ export interface FeaturedRecord {
   }
 }
 
+export interface NFT3Stats {
+  dids: number
+  followings: number
+  socials: number
+}
+
 export default class NFT3Queryer {
   private request: AxiosInstance
 
@@ -182,7 +190,20 @@ export default class NFT3Queryer {
     })
   }
 
-  private nft3FeaturedQuery(options: { offset?: number, limit?: number }) {
+  private nft3StatsQuery() {
+    const query = `nft3Stats {
+      dids
+      followings
+      socials
+    }`
+    return {
+      query,
+      vars: '',
+      params: {}
+    }
+  }
+
+  private nft3FeaturedQuery(options: { offset?: number; limit?: number }) {
     const query = `nft3Featured(offset: $featuredOffset, limit: $featuredLimit) {
       did
       followers
@@ -407,16 +428,21 @@ export default class NFT3Queryer {
         options[key]
       ])
       bodys.push(query)
-      querys.push(vars)
+      if (vars) querys.push(vars)
       variables = {
         ...variables,
         ...params
       }
     }
     const queryStr = querys.join(', ')
-    const content = `query NFT3Query(${queryStr}) {
+    let content = `query NFT3Query(${queryStr}) {
       ${bodys.join('\n')}
     }`
+    if (querys.length === 0) {
+      content = `query NFT3Query {
+        ${bodys.join('\n')}
+      }`
+    }
     return {
       query: content,
       variables
