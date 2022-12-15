@@ -5,6 +5,7 @@ import NFT3Model from './NFT3Model'
 import NFT3Profile from './NFT3Profile'
 import NFT3Follow from './NFT3Follow'
 import NFT3SocialAccount from './NFT3SocialAccount'
+import NFT3Referrer from './NFT3Referrer'
 
 export default class NFT3Client {
   private gateway: NFT3Gateway
@@ -12,6 +13,7 @@ export default class NFT3Client {
   did: NFT3DID
   follow: NFT3Follow
   socialAccount: NFT3SocialAccount
+  referrer: NFT3Referrer
 
   constructor(endpoint: string) {
     this.gateway = new NFT3Gateway(endpoint)
@@ -19,6 +21,7 @@ export default class NFT3Client {
     this.follow = new NFT3Follow(this)
     this.profile = new NFT3Profile(this)
     this.socialAccount = new NFT3SocialAccount(this)
+    this.referrer = new NFT3Referrer(this)
   }
 
   send<T = any>(method: string, params: Record<string, any> = {}) {

@@ -100,7 +100,7 @@ export default class NFT3Model<T = any> {
     }
   }
 
-  async count(options: CountOptions) {
+  async count(options: CountOptions<T>) {
     const params = {
       did: options.identifier,
       modelid: this.modelId,

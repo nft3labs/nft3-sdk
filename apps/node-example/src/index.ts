@@ -6,7 +6,7 @@ interface INote {
 }
 
 const solanaKey = 'Rrcv7QxrxCMr5JR9fvAmtt2NqFLNUdFFZdGZvqjowQDCQd5uR8XZnzWYh9xSuUQXTPbTTMAX4EfhHAyy4eA9ET7'
-const privateKey = `0x3d85afd188167058a934ea9c2ab3442ea0adef87ed3162d85e32c3fc59eabc38`
+const privateKey = `0xf8494baeb681ed52a8847da8b59291472d40ed8babf6c0bb947d77a05af5b3a7`
 const gatewayEndpoint = 'https://t0.onebitdev.com/nft3-gateway/'
 const queryerEndpoint = 'https://t0.onebitdev.com/nft3-queryer/'
 const verifierEndpoint = 'https://t0.onebitdev.com/nft3-verifier/'
@@ -285,4 +285,25 @@ async function didInfo() {
   console.log(result)
 }
 
-query()
+async function referrerAdd() {
+  await client.did.login()
+  const result = await client.referrer.add('did:nft3:bob')
+  console.log(result)
+}
+
+async function referrerInfo() {
+  const result = await client.referrer.info('did:nft3:alicev1')
+  console.log(result)
+}
+
+async function referrerCount() {
+  const result = await client.referrer.count('did:nft3:bob')
+  console.log(result)
+}
+
+async function referrerList() {
+  const result = await client.referrer.list('did:nft3:bob')
+  console.log(result)
+}
+
+referrerList()

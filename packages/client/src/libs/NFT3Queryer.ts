@@ -179,6 +179,7 @@ export interface NFT3Stats {
   dids: number
   followings: number
   socials: number
+  unclaims: number
 }
 
 export default class NFT3Queryer {
@@ -195,6 +196,7 @@ export default class NFT3Queryer {
       dids
       followings
       socials
+      unclaims
     }`
     return {
       query,
@@ -423,10 +425,10 @@ export default class NFT3Queryer {
     const bodys = []
     let variables: any = {}
     for (const key of keys) {
-      const method = Reflect.get(this, `${key}Query`)
+      const method: any = Reflect.get(this, `${key}Query`)
       const { query, vars, params } = Reflect.apply(method, this, [
         options[key]
-      ])
+      ]) as any
       bodys.push(query)
       if (vars) querys.push(vars)
       variables = {
