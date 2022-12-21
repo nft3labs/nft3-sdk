@@ -17,7 +17,8 @@ import {
   OpenseaAssetsRecord,
   ENSTextRecord,
   FeaturedRecord,
-  NFT3Stats
+  NFT3Stats,
+  NFT3ReferrerStats
 } from './libs/NFT3Queryer'
 
 export {
@@ -40,5 +41,6 @@ export {
   ENSTextRecord,
   DIDSearchRecord,
   FeaturedRecord,
-  NFT3Stats
+  NFT3Stats,
+  NFT3ReferrerStats
 }

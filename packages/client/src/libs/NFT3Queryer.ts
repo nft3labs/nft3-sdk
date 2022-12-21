@@ -120,6 +120,7 @@ export interface QueryOptions {
     limit?: number
   }
   nft3Stats?: {}
+  nft3ReferrerStats?: { did: string }
 }
 
 export interface QueryResponse {
@@ -132,6 +133,7 @@ export interface QueryResponse {
   ensTextRecords: ENSTextRecord[]
   nft3Featured: FeaturedRecord[]
   nft3Stats: NFT3Stats
+  nft3ReferrerStats: NFT3ReferrerStats
 }
 
 export interface OpenseaAssetsOptions {
@@ -182,6 +184,13 @@ export interface NFT3Stats {
   unclaims: number
 }
 
+export interface NFT3ReferrerStats {
+  invitees: number
+  verified_invitess: number
+  reward: number
+  claimable_reward: number
+}
+
 export default class NFT3Queryer {
   private request: AxiosInstance
 
@@ -189,6 +198,24 @@ export default class NFT3Queryer {
     this.request = axios.create({
       baseURL: endpoint.replace(/\/$/, '')
     })
+  }
+
+  private nft3ReferrerStatsQuery(options: { did: string }) {
+    const query = `nft3ReferrerStats(did: $nft3ReferrerStatsDid) {
+      invitees
+      verified_invitess
+      reward
+      claimable_reward
+    }`
+    const vars = `$nft3ReferrerStatsDid: String!`
+    const params = {
+      nft3ReferrerStatsDid: options.did
+    }
+    return {
+      query,
+      vars,
+      params
+    }
   }
 
   private nft3StatsQuery() {

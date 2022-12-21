@@ -301,9 +301,20 @@ async function referrerCount() {
   console.log(result)
 }
 
+async function referrerStsts() {
+  const queryer = new NFT3Queryer(queryerEndpoint)
+  const result = await queryer.query({
+    nft3ReferrerStats: {
+      did: 'did:nft3:bob'
+    },
+    nft3Stats: {}
+  })
+  console.log(result)
+}
+
 async function referrerList() {
   const result = await client.referrer.list('did:nft3:bob')
   console.log(result)
 }
 
-referrerList()
+referrerStsts()
