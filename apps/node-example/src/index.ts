@@ -317,4 +317,4 @@ async function referrerList() {
   console.log(result)
 }
 
-referrerStsts()
+query()

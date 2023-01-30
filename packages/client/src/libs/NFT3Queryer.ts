@@ -178,8 +178,11 @@ export interface FeaturedRecord {
 }
 
 export interface NFT3Stats {
+  communitys: number
+  connections: number
   dids: number
   followings: number
+  referrers: number
   socials: number
   unclaims: number
 }
@@ -220,10 +223,13 @@ export default class NFT3Queryer {
 
   private nft3StatsQuery() {
     const query = `nft3Stats {
-      dids
       followings
+      dids
       socials
       unclaims
+      referrers
+      connections
+      communitys
     }`
     return {
       query,
