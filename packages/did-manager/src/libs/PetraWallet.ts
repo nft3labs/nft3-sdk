@@ -1,6 +1,7 @@
 import { IWallet, NetworkType, WalletType } from './types'
 
 export default class PetraWallet implements IWallet {
+  chainId: number = 1
   network: NetworkType = 'Aptos'
   wallet: WalletType
   account?: string

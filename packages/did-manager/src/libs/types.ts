@@ -8,6 +8,7 @@ export type NetworkType =
   | 'Aptos'
 export type WalletType = 'MetaMask' | 'Phantom' | 'Petra'
 export interface IWallet {
+  chainId: number
   wallet: WalletType
   network: NetworkType
   account?: string

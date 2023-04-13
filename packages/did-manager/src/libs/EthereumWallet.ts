@@ -2,7 +2,7 @@ import { Web3Provider } from '@ethersproject/providers'
 import { IWallet, NetworkType, WalletType } from './types'
 
 export default class EthereumWallet implements IWallet {
-  chainId: Number = 1
+  chainId: number = 1
   wallet: WalletType
   account?: string
   provider?: Web3Provider

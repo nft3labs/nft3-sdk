@@ -1,6 +1,7 @@
 import { IWallet, NetworkType, WalletType } from './types'
 
 export default class SolanaWallet implements IWallet {
+  chainId: number = 1
   network: NetworkType = 'Solana'
   wallet: WalletType
   provider: any

@@ -165,6 +165,7 @@ function useWebNFT3(endpoint: string) {
       throw new Error('Invalid wallet type')
     }
     await wallet.connect(silent)
+    setChainId(wallet.chainId)
     localStorage.setItem('wallet', type)
     wallet.onAccountChanged((accounts: string[]) => {
       setAccount(accounts[0] || undefined)
