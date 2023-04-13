@@ -8,6 +8,7 @@ import { SigningKey } from '@ethersproject/signing-key'
 import NFT3Client from './NFT3Client'
 import EthereumWallet from '../wallets/EthereumWallet'
 import SolanaWallet from '../wallets/SolanaWallet'
+import AptosWallet from '../wallets/AptosWallet'
 import { NetworkType, NFT3Wallet } from '../types/model'
 
 interface DIDSearchResult {
@@ -51,7 +52,7 @@ export default class NFT3DID {
     signKey?: string
     signer?: Signer
   }) {
-    if (options.network === 'ethereum') {
+    if (['ethereum', 'polygon', 'bnb', 'arb', 'op'].includes(options.network)) {
       this.wallet = new EthereumWallet({
         network: options.network,
         privateKey: options.privateKey,
@@ -60,6 +61,13 @@ export default class NFT3DID {
     }
     if (options.network === 'solana') {
       this.wallet = new SolanaWallet({
+        network: options.network,
+        privateKey: options.privateKey,
+        signer: options.signer
+      })
+    }
+    if (options.network === 'aptos') {
+      this.wallet = new AptosWallet({
         network: options.network,
         privateKey: options.privateKey,
         signer: options.signer
@@ -117,7 +125,9 @@ export default class NFT3DID {
     const keys = Object.keys(message).sort()
     const items: string[] = []
     for (const key of keys) {
-      items.push(`${key}=${message[key]}`)
+      if (message[key] !== undefined) {
+        items.push(`${key}=${message[key]}`)
+      }
     }
     return items.join('&')
   }
@@ -154,12 +164,15 @@ export default class NFT3DID {
   private async ctrlSign(params: {
     msg: Record<string, any>
     [propName: string]: any
-  }) {
+  }, network?: string) {
     params.msg.sign_expired_at = Math.trunc(Date.now() / 1000 + SignExpires)
     const message = this.formatMessage(params.msg)
-    const { signature, publicKey } = await this.wallet.signMessage(message)
-    params.ctrl_key = `${this.wallet.network}:${publicKey}`
+    const { signature, publicKey, nonce } = await this.wallet.signMessage(
+      message
+    )
+    params.ctrl_key = `${network || this.wallet.network}:${publicKey}`
     params.ctrl_sign = signature
+    if (nonce) params.nonce = nonce
   }
 
   /**
@@ -196,7 +209,9 @@ export default class NFT3DID {
         const params = {
           msg: {
             session_key: this.signer.publicKey,
-            session_key_expired_at: Math.trunc(Date.now() / 1000 + SessionExpires)
+            session_key_expired_at: Math.trunc(
+              Date.now() / 1000 + SessionExpires
+            )
           }
         }
         await this.ctrlSign(params)
@@ -259,11 +274,12 @@ export default class NFT3DID {
   async addKey() {
     const subParams: any = { msg: {} }
     await this.ctrlSign(subParams)
-    const params = {
+    const params: any = {
       msg: {
         msg: JSON.stringify(subParams.msg),
         new_ctrl_key: subParams.ctrl_key,
-        new_ctrl_sign: subParams.ctrl_sign
+        new_ctrl_sign: subParams.ctrl_sign,
+        nonce: subParams.nonce
       }
     }
     await this.send('nft3_did_keys_add', params)
@@ -276,14 +292,15 @@ export default class NFT3DID {
    * remove current wallet from ctrl keys
    * @returns
    */
-  async removeKey() {
+  async removeKey(network?: string) {
     const subParams: any = { msg: {} }
-    await this.ctrlSign(subParams)
+    await this.ctrlSign(subParams, network)
     const params = {
       msg: {
         msg: JSON.stringify(subParams.msg),
         remove_ctrl_key: subParams.ctrl_key,
-        remove_ctrl_sign: subParams.ctrl_sign
+        remove_ctrl_sign: subParams.ctrl_sign,
+        nonce: subParams.nonce
       }
     }
     await this.send('nft3_did_keys_remove', params)

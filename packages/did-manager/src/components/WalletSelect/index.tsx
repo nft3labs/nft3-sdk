@@ -3,6 +3,7 @@ import { useRef } from 'react'
 import NFT3Modal from '../NFT3Modal'
 import IconMetamask from './MetaMask'
 import IconPhantom from './Phantom'
+import IconPetra from './Petra'
 import { WalletType } from '../../libs/types'
 
 interface Props {
@@ -36,6 +37,14 @@ export default function WalletSelect({ visible, onClose }: Props) {
       check: () => {
         return 'phantom' in window
       }
+    },
+    {
+      wallet: 'Petra',
+      icon: IconPetra,
+      link: 'https://petra.app/',
+      check: () => {
+        return 'aptos' in window
+      }
     }
   ]
 
@@ -50,11 +59,7 @@ export default function WalletSelect({ visible, onClose }: Props) {
   }
 
   return (
-    <NFT3Modal
-      title="Connect Wallet"
-      visible={visible}
-      onClose={closeModal}
-    >
+    <NFT3Modal title="Connect Wallet" visible={visible} onClose={closeModal}>
       <div className="nft3-wallet__list">
         {wallets.map((item, i) => (
           <div

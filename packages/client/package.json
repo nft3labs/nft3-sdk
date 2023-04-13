@@ -1,6 +1,6 @@
 {
   "name": "@nft3sdk/client",
-  "version": "0.2.4",
+  "version": "0.3.0",
   "description": "NFT3 SDK client",
   "main": "dist/cjs/index.js",
   "module": "dist/es/index.js",

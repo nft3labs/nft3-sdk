@@ -7,6 +7,14 @@ declare const solana: {
   connect: () => Promise<any>
   disconnect: () => Promise<void>
 }
+declare const aptos: {
+  [propName: string]: any
+  account: () => Promise<{ publicKey: string }>
+  signMessage: (params: {
+    message: string
+    nonce: string
+  }) => Promise<{ signature: string; fullMessage: string }>
+}
 declare module '*.svg' {
   const src: string
   export default src

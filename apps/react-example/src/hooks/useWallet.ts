@@ -7,7 +7,7 @@ interface AccountRecord {
 }
 
 export default function useWallet() {
-  const { client, identifier } = useNFT3()
+  const { account, client, identifier } = useNFT3()
   const [accounts, setAccounts] = useState<AccountRecord[]>([])
 
   const list = useCallback(async () => {
@@ -29,9 +29,15 @@ export default function useWallet() {
   }, [client.did, list])
 
   const remove = useCallback(async () => {
-    await client.did.removeKey()
+    let network = ''
+    for (const item of accounts) {
+      if (item.account === account) {
+        network = item.network
+      }
+    }
+    await client.did.removeKey(network)
     list()
-  }, [client.did, list])
+  }, [client.did, list, accounts, account])
 
   useEffect(() => {
     list()

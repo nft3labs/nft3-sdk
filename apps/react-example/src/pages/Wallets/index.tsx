@@ -5,6 +5,13 @@ import { IconPlus, IconClose } from '@arco-design/web-react/icon'
 
 import styles from './style.module.scss'
 import useWallet from '@hooks/useWallet'
+import IconEthereum from '@assets/ethereum.svg'
+import IconAptos from '@assets/aptos.svg'
+import IconArbitrum from '@assets/arbitrum.svg'
+import IconPolygon from '@assets/polygon.svg'
+import IconOptimism from '@assets/optimism.svg'
+import IconSolana from '@assets/solana.svg'
+import IconBsc from '@assets/bsc.svg'
 
 export default function Wallets() {
   const { accounts, add, remove } = useWallet()
@@ -35,6 +42,40 @@ export default function Wallets() {
     }
   }
 
+  const network = (type: string) => {
+    let icon = IconEthereum
+    let text = 'Ethereum'
+    switch (type.toLowerCase()) {
+      case 'solana':
+        icon = IconSolana
+        text = 'Solana'
+        break
+      case 'polygon':
+        icon = IconPolygon
+        text = 'Polygon'
+        break
+      case 'bnb':
+        icon = IconBsc
+        text = 'BSC'
+        break
+      case 'arb':
+        icon = IconArbitrum
+        text = 'Arbitrum'
+        break
+      case 'op':
+        icon = IconOptimism
+        text = 'Optimism'
+        break
+      case 'aptos':
+        icon = IconAptos
+        text = 'Aptos'
+    }
+    return {
+      icon,
+      text
+    }
+  }
+
   const added = useMemo(() => {
     const index = accounts.findIndex(
       item => item.account.toLowerCase() === account?.toLowerCase() && account
@@ -49,7 +90,20 @@ export default function Wallets() {
         dataSource={accounts}
         className={styles.list}
         render={(item, i) => (
-          <List.Item key={i} actions={[<span>{item.network}</span>]}>
+          <List.Item
+            key={i}
+            actions={[
+              <div className={styles.network}>
+                <img
+                  src={network(item.network).icon}
+                  width={16}
+                  height={16}
+                  alt=""
+                />
+                <span>{network(item.network).text}</span>
+              </div>
+            ]}
+          >
             <List.Item.Meta
               title={<div className={styles.type}>{item.account}</div>}
             />
@@ -58,7 +112,7 @@ export default function Wallets() {
       />
       <div className={styles.bottom}>
         <div className={styles.current}>{account}</div>
-        {added ? (
+        {!!account && added && (
           <Button
             type="primary"
             status="danger"
@@ -71,7 +125,8 @@ export default function Wallets() {
           >
             Remove this wallet
           </Button>
-        ) : (
+        )}
+        {!!account && !added && (
           <Button
             type="primary"
             size="large"

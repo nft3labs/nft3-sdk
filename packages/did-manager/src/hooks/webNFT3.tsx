@@ -12,6 +12,7 @@ import { NFT3Client } from '@nft3sdk/client'
 
 import EthereumWallet from '../libs/EthereumWallet'
 import SolanaWallet from '../libs/SolanaWallet'
+import PetraWallet from '../libs/PetraWallet'
 import { NetworkType, WalletType, IWallet } from '../libs/types'
 import WalletSelect from '../components/WalletSelect'
 import NFT3Register from '../components/NFT3Register'
@@ -31,6 +32,7 @@ interface NFT3Context {
   ready?: boolean
   theme: NFT3Theme
   identifier?: string
+  chainId: number
   connect: () => void
   login: () => Promise<LoginResult>
   register: (didname: string) => Promise<string>
@@ -51,6 +53,7 @@ const context: IContexts = {
 
 function useWebNFT3(endpoint: string) {
   const [ready, setReady] = useState(false)
+  const [chainId, setChainId] = useState(1)
   const [account, setAccount] = useState<string>()
   const [wallet, setWallet] = useState<WalletType>()
   const [network, setNetwork] = useState<NetworkType>()
@@ -75,10 +78,10 @@ function useWebNFT3(endpoint: string) {
 
   useEffect(() => {
     const sessionKey = sessionStorage.getItem('sessionKey') || undefined
-    if (nft3Wallet?.network === 'Ethereum') {
+    if (nft3Wallet?.wallet === 'MetaMask') {
       const signer = nft3Wallet?.provider?.getSigner()
       client.did.config({
-        network: 'ethereum',
+        network: nft3Wallet.network.toLowerCase() as any,
         signer,
         signKey: sessionKey
       })
@@ -90,7 +93,14 @@ function useWebNFT3(endpoint: string) {
         signKey: sessionKey
       })
     }
-  }, [nft3Wallet, client])
+    if (nft3Wallet?.network === 'Aptos') {
+      client.did.config({
+        network: 'aptos',
+        signer: nft3Wallet?.provider,
+        signKey: sessionKey
+      })
+    }
+  }, [nft3Wallet, client, chainId])
 
   // DID register
   const register = useCallback(
@@ -149,6 +159,8 @@ function useWebNFT3(endpoint: string) {
       wallet = new EthereumWallet('MetaMask')
     } else if (type === 'Phantom') {
       wallet = new SolanaWallet('Phantom')
+    } else if (type === 'Petra') {
+      wallet = new PetraWallet('Petra')
     } else {
       throw new Error('Invalid wallet type')
     }
@@ -156,6 +168,9 @@ function useWebNFT3(endpoint: string) {
     localStorage.setItem('wallet', type)
     wallet.onAccountChanged((accounts: string[]) => {
       setAccount(accounts[0] || undefined)
+    })
+    wallet.onChainChanged((chainId: number) => {
+      setChainId(chainId)
     })
     wallet.onDisconnect(() => {
       setAccount(undefined)
@@ -175,6 +190,7 @@ function useWebNFT3(endpoint: string) {
   }, [])
 
   return {
+    chainId,
     wallet,
     network,
     nft3Wallet,
@@ -207,6 +223,7 @@ function createNFT3Context() {
     account: undefined,
     didname: undefined,
     theme: 'light',
+    chainId: 0,
     connect: () => {},
     eagerConnect: () => {},
     disconnect: () => {},
@@ -238,6 +255,7 @@ function createNFT3Context() {
       client,
       didname,
       ready,
+      chainId,
       identifier,
       needRegister,
       selectWallet,
@@ -267,6 +285,7 @@ function createNFT3Context() {
           ready,
           theme,
           identifier,
+          chainId,
           login,
           logout,
           register,

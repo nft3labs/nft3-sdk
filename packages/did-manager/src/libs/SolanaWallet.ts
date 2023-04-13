@@ -29,6 +29,8 @@ export default class SolanaWallet implements IWallet {
   onAccountChanged(callback: any) {
     this.provider.on('accountChanged', callback)
   }
+  
+  onChainChanged() {}
 
   onDisconnect(callback: any) {
     this.provider.on('disconnect', callback)

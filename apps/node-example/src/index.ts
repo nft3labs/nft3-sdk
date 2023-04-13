@@ -5,6 +5,7 @@ interface INote {
   content: string
 }
 
+const aptosKey = '0x3b5bbeb04b15fee34601c9b83b208be7f69df20f8b579bf99e0d9d777d05e36d'
 const solanaKey = 'Rrcv7QxrxCMr5JR9fvAmtt2NqFLNUdFFZdGZvqjowQDCQd5uR8XZnzWYh9xSuUQXTPbTTMAX4EfhHAyy4eA9ET7'
 const privateKey = `0xf8494baeb681ed52a8847da8b59291472d40ed8babf6c0bb947d77a05af5b3a7`
 const gatewayEndpoint = 'https://t0.onebitdev.com/nft3-gateway/'
@@ -12,6 +13,12 @@ const queryerEndpoint = 'https://t0.onebitdev.com/nft3-queryer/'
 const verifierEndpoint = 'https://t0.onebitdev.com/nft3-verifier/'
 const postModelId = 'testmodel-post'
 const postDataId = '206708bb-5c25-4a7f-a772-9ac6da69e0c3'
+
+const aptosClient = new NFT3Client(gatewayEndpoint)
+aptosClient.did.config({
+  network: 'aptos',
+  privateKey: aptosKey
+})
 
 const solanaClient = new NFT3Client(gatewayEndpoint)
 solanaClient.did.config({
@@ -25,6 +32,15 @@ client.did.config({
   privateKey
 })
 const verifier = new NFT3Verifier(client, verifierEndpoint)
+
+async function aptosRegister() {
+  try {
+    const result = await aptosClient.did.register('laozhao3')
+    console.log(result)
+  } catch (error) {
+    console.trace(error)
+  }
+}
 
 async function solanaRegister() {
   try {
@@ -317,4 +333,4 @@ async function referrerList() {
   console.log(result)
 }
 
-query()
+aptosRegister()
