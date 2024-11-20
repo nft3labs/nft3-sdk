@@ -56,7 +56,7 @@ importers:
         version: 18.0.6
       '@vitejs/plugin-react':
         specifier: ^2.0.1
-        version: 2.1.0(vite@3.2.10)
+        version: 2.1.0(vite@3.2.11)
       eslint:
         specifier: ^8.23.0
         version: 8.23.1
@@ -70,14 +70,14 @@ importers:
         specifier: ^4.6.4
         version: 4.8.3
       vite:
-        specifier: ^3.2.10
-        version: 3.2.10(@types/node@18.7.16)(sass@1.54.9)
+        specifier: ^3.2.11
+        version: 3.2.11(@types/node@18.7.16)(sass@1.54.9)
       vite-plugin-rewrite-all:
         specifier: ^1.0.0
-        version: 1.0.0(vite@3.2.10)
+        version: 1.0.0(vite@3.2.11)
       vite-plugin-svgr:
         specifier: ^2.2.1
-        version: 2.2.1(vite@3.2.10)
+        version: 2.2.1(vite@3.2.11)
 
   packages/client:
     dependencies:
@@ -2264,7 +2264,7 @@ packages:
       eslint-visitor-keys: 3.3.0
     dev: true
 
-  /@vitejs/plugin-react@2.1.0(vite@3.2.10):
+  /@vitejs/plugin-react@2.1.0(vite@3.2.11):
     resolution: {integrity: sha512-am6rPyyU3LzUYne3Gd9oj9c4Rzbq5hQnuGXSMT6Gujq45Il/+bunwq3lrB7wghLkiF45ygMwft37vgJ/NE8IAA==}
     engines: {node: ^14.18.0 || >=16.0.0}
     peerDependencies:
@@ -2277,7 +2277,7 @@ packages:
       '@babel/plugin-transform-react-jsx-source': 7.18.6(@babel/core@7.19.0)
       magic-string: 0.26.3
       react-refresh: 0.14.0
-      vite: 3.2.10(@types/node@18.7.16)(sass@1.54.9)
+      vite: 3.2.11(@types/node@18.7.16)(sass@1.54.9)
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -4191,7 +4191,7 @@ packages:
     resolution: {integrity: sha512-oWb1Z6mkHIskLzEJ/XWX0srkpkTQ7vaopMQkyaEIoq0fmtFVxOthb8cCxeT+p3ynTdkk/RZwbgG4brR5BeWECw==}
     engines: {node: '>= 4.0'}
     os: [darwin]
-    deprecated: The v1 package contains DANGEROUS / INSECURE binaries. Upgrade to safe fsevents v2
+    deprecated: Upgrade to fsevents v2 to mitigate potential security issues
     requiresBuild: true
     dependencies:
       bindings: 1.5.0
@@ -6749,30 +6749,30 @@ packages:
       replace-ext: 1.0.1
     dev: true
 
-  /vite-plugin-rewrite-all@1.0.0(vite@3.2.10):
+  /vite-plugin-rewrite-all@1.0.0(vite@3.2.11):
     resolution: {integrity: sha512-XScNU1F73ImgsNQUuDTBd09r8nSz8Umr5PVhfmGJ8FTrFvfcci+P1pD7lT5BIdua75ZoNZGfHgdNYwnZB4cszQ==}
     engines: {node: '>=12.0.0'}
     peerDependencies:
       vite: ^2.0.0 || ^3.0.0
     dependencies:
       connect-history-api-fallback: 1.6.0
-      vite: 3.2.10(@types/node@18.7.16)(sass@1.54.9)
+      vite: 3.2.11(@types/node@18.7.16)(sass@1.54.9)
     dev: true
 
-  /vite-plugin-svgr@2.2.1(vite@3.2.10):
+  /vite-plugin-svgr@2.2.1(vite@3.2.11):
     resolution: {integrity: sha512-+EqwahbwjETJH/ssA/66dNYyKN1cO0AStq96MuXmq5maU7AePBMf2lDKfQna49tJZAjtRz+R899BWCsUUP45Fg==}
     peerDependencies:
       vite: ^2.6.0 || 3
     dependencies:
       '@rollup/pluginutils': 4.2.1
       '@svgr/core': 6.3.1
-      vite: 3.2.10(@types/node@18.7.16)(sass@1.54.9)
+      vite: 3.2.11(@types/node@18.7.16)(sass@1.54.9)
     transitivePeerDependencies:
       - supports-color
     dev: true
 
-  /vite@3.2.10(@types/node@18.7.16)(sass@1.54.9):
-    resolution: {integrity: sha512-Dx3olBo/ODNiMVk/cA5Yft9Ws+snLOXrhLtrI3F4XLt4syz2Yg8fayZMWScPKoz12v5BUv7VEmQHnsfpY80fYw==}
+  /vite@3.2.11(@types/node@18.7.16)(sass@1.54.9):
+    resolution: {integrity: sha512-K/jGKL/PgbIgKCiJo5QbASQhFiV02X9Jh+Qq0AKCRCRKZtOTVi4t6wh75FDpGf2N9rYOnzH87OEFQNaFy6pdxQ==}
     engines: {node: ^14.18.0 || >=16.0.0}
     hasBin: true
     peerDependencies:
