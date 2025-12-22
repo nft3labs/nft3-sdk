@@ -20,12 +20,12 @@
     "@ethersproject/bytes": "^5.6.1",
     "@ethersproject/hash": "^5.6.1",
     "@ethersproject/sha2": "^5.6.1",
-    "@ethersproject/signing-key": "^5.6.2",
+    "@ethersproject/signing-key": "^5.8.0",
     "@ethersproject/strings": "^5.6.1",
     "@ethersproject/units": "^5.7.0",
     "@ethersproject/wallet": "^5.6.2",
     "@types/json-schema": "^7.0.11",
-    "axios": "^1.6.3",
+    "axios": "^1.12.0",
     "tweetnacl": "^1.0.3"
   },
   "devDependencies": {
